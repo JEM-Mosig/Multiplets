@@ -13,7 +13,30 @@
 (* :Discussion: *)
 
 BeginPackage["YoungTableaux`"]
-(* Exported symbols added here with SymbolName::usage *)
+
+If[!ValueQ[Tableau::usage],
+  Tableau::usage = "Tableau[spec, fil] is a wrapper for a general Young Tableau. spec is a list of row-lengths and fil specifies what is written within the boxes. Alternatively fil can be a filling function or nothing.";
+];
+
+If[!ValueQ[TableauQ::usage],
+  TableauQ::usage = "TableauQ[expr] checks, whether expr is a well defined Young Tableau.";
+];
+
+If[!ValueQ[TableauDimension::usage],
+  TableauDimension::usage = "TableauDimension[tab, n] gives the dimension of the Young Tableau tab for the SU(n) case.";
+];
+
+If[!ValueQ[TableauLetters::usage],
+  TableauLetters::usage = "TableauLetters[tab, n] fills a given Tableau tab with one letter in each row, starting from the nth letter in the latin alphabet.";
+];
+
+If[!ValueQ[TableauDistances::usage],
+    TableauDistances::usage = "TableauDistances[tab] fills a given Tableau tab with (possibly negative) integer 'distances'.";
+];
+
+If[!ValueQ[TableauHooks::usage],
+    TableauHooks::usage = "TableauHooks[tab] fills a given Tableau tab with hook distances.";
+];
 
 Begin["`Private`"]
 
