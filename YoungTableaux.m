@@ -40,6 +40,25 @@ If[!ValueQ[TableauHooks::usage],
 
 Begin["`Private`"]
 
+(* TableauQ                                    *)
+(* =========================================== *)
+
+SetAttributes[TableauQ, {}];
+
+SyntaxInformation[TableauQ] = {
+  "ArgumentsPattern" -> {_}
+};
+
+TableauQ[expr_] := And[
+  Head[expr] === Tableau,
+  ListQ[expr[[1]]],
+  OrderedQ[Reverse[expr[[1]]]],
+  Or[
+    Length[expr] == 1,
+    Length[expr] == 2 && Length[expr[[2]]] <= Total[expr[[1]]] && ListQ[expr[[2]]]
+  ]
+];
+
 End[] (* `Private` *)
 
 EndPackage[]
