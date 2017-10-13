@@ -62,6 +62,10 @@ Interpretation[
   t
 ]
 
+(* automatically fill when supplied with function *)
+Tableau[spec_, func_Symbol] := Tableau[spec, func[Tableau[spec]]]
+Tableau[spec_, func_Function] := Tableau[spec, func[Tableau[spec]]]
+
 
 (* tableauChart (PRIVATE)                      *)
 (* =========================================== *)
