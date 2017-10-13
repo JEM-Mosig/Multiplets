@@ -38,6 +38,10 @@ If[!ValueQ[TableauHooks::usage],
     TableauHooks::usage = "TableauHooks[tab] fills a given Tableau tab with hook distances.";
 ];
 
+If[!ValueQ[$MaxTableauPrintPoints::usage],
+    $MaxTableauPrintPoints::usage = "$MaxTableauPrintPoints is an integer which controls up to what number of points a Tableau is presented graphically in StandardForm.";
+];
+
 Begin["`Private`"]
 
 (* TableauQ                                    *)
