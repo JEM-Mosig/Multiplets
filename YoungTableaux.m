@@ -207,6 +207,25 @@ TableauHooks[Tableau[spec_, ___], n_:0] := Flatten@Table[
 TableauHooks[Tableau[_, __], ___] := Message[Tableau::nepty]
 
 
+(* TableauDimension                           *)
+(* =========================================== *)
+
+SetAttributes[TableauDimension, {Listable}];
+
+SyntaxInformation[TableauDimension] = {
+  (* TableauDimension must have at least one argument *)
+  "ArgumentsPattern" -> {__}
+};
+
+TableauDimension[t:Tableau[spec_, ___], SUGroupDegree_:2] :=
+Module[{numBoxes, d, h},
+  numBoxes = Total[spec];
+  d = TableauDistances[t];
+  h = TableauHooks[t];
+  Product[(SUGroupDegree + d[[i]]) / h[[i]], {i, 1, numBoxes}]
+]
+
+
 End[] (* `Private` *)
 
 EndPackage[]
