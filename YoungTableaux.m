@@ -48,6 +48,13 @@ Begin["`Private`"]
 (* Tableau                                     *)
 (* =========================================== *)
 
+SetAttributes[Tableau, {HoldFirst}];
+
+SyntaxInformation[Tableau] = {
+  (* Tableau must have at least one argument *)
+  "ArgumentsPattern" -> {__}
+};
+
 (* print visual representation in StandardForm if small enough spec *)
 Format[t:Tableau[spec_, ___], StandardForm] :=
 Interpretation[
