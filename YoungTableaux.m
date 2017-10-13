@@ -44,6 +44,22 @@ If[!ValueQ[$MaxTableauPrintPoints::usage],
 
 Begin["`Private`"]
 
+
+(* $MaxTableauPrintPoints                      *)
+(* =========================================== *)
+
+(* set the default value *)
+$MaxTableauPrintPoints = 300;
+
+(* prevent the user from setting invalid values *)
+$MaxTableauPrintPoints /: HoldPattern[(Set | SetDelayed)[$MaxTableauPrintPoints, x_]] := (
+  Message[$MaxTableauPrintPoints::intOnly];
+  $MaxTableauPrintPoints
+) /; (!MemberQ[{Integer, DirectedInfinity}, Head[x]] || Negative[x])
+
+$MaxTableauPrintPoints::intOnly = "$MaxTableauPrintPoints must be a non-negative integer or Infinity.";
+
+
 (* TableauQ                                    *)
 (* =========================================== *)
 

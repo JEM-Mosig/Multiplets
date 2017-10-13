@@ -3,6 +3,47 @@
 
 BeginTestSection["Tableau.mt"]
 
+(* test $MaxTableauPrintPoints *)
+(* ====================================== *)
+
+VerificationTest[
+  $MaxTableauPrintPoints = -1
+  ,
+  $MaxTableauPrintPoints
+  ,
+  {$MaxTableauPrintPoints::intOnly}
+]
+
+VerificationTest[
+  $MaxTableauPrintPoints = 1.1
+  ,
+  $MaxTableauPrintPoints
+  ,
+  {$MaxTableauPrintPoints::intOnly}
+]
+
+VerificationTest[
+  Module[{val = $MaxTableauPrintPoints},
+    $MaxTableauPrintPoints = Infinity;
+    $MaxTableauPrintPoints = val;
+  ]
+  ,
+  Null
+  ,
+  {}
+]
+
+VerificationTest[
+  Module[{val = $MaxTableauPrintPoints},
+    $MaxTableauPrintPoints = 23;
+    $MaxTableauPrintPoints = val;
+  ]
+  ,
+  Null
+  ,
+  {}
+]
+
 (* test automatic filling *)
 (* ====================== *)
 
