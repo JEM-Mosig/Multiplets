@@ -190,6 +190,23 @@ TableauDistances[Tableau[spec_, ___],n_:0] := Flatten@Table[
 TableauDistances[Tableau[_, __], ___] := Message[Tableau::nepty]
 
 
+(* TableauHooks                                *)
+(* =========================================== *)
+
+SyntaxInformation[TableauHooks] = {
+  (* TableauDistances must have at least one argument *)
+  "ArgumentsPattern" -> {__}
+};
+
+TableauHooks[Tableau[spec_, ___], n_:0] := Flatten@Table[
+  If[j <= spec[[i]], (spec[[i]]-j) + Count[spec[[i;;]], u_ /; (u >= j)], Nothing],
+  {i, Length[spec]},
+  {j, spec[[1]]}
+]
+
+TableauHooks[Tableau[_, __], ___] := Message[Tableau::nepty]
+
+
 End[] (* `Private` *)
 
 EndPackage[]

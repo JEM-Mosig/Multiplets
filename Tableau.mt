@@ -95,7 +95,7 @@ VerificationTest[
 (* TableauHook *)
 
 VerificationTest[
-  Tableau[{4, 3, 2, 1}, TableauHook]
+  Tableau[{4, 3, 2, 1}, TableauHooks]
   ,
   Tableau[{4, 3, 2, 1}, {7, 5, 3, 1, 5, 3, 1, 3, 1, 1}]
 ]
