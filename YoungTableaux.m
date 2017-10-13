@@ -45,6 +45,64 @@ If[!ValueQ[$MaxTableauPrintPoints::usage],
 Begin["`Private`"]
 
 
+(* Tableau                                     *)
+(* =========================================== *)
+
+(* print visual representation in StandardForm if small enough spec *)
+Format[t:Tableau[spec_, ___], StandardForm] :=
+Interpretation[
+  tableauChart[t],
+  t
+] /; Total[spec] <= $MaxTableauPrintPoints
+
+(* always print visual representation in TraditionalForm *)
+Format[t:Tableau[spec_, ___], TraditionalForm] :=
+Interpretation[
+  tableauChart[t],
+  t
+]
+
+
+(* tableauChart (PRIVATE)                      *)
+(* =========================================== *)
+
+SyntaxInformation[tableauChart] = {
+  "ArgumentsPattern" -> {_}
+};
+
+tableauChart[Tableau[spec_, filling_:{}]] := If[spec == {},
+(* an empty Tableau is displayed as "1" *)
+  Style[1, Large, Bold],
+(* a non-empty Tableau is displayed as a diagram *)
+  Grid[
+    Module[{stack},
+      If[ListQ[filling],
+        stack = Prepend[filling /. (Indeterminate|None|Null) -> Invisible[1], 0],
+        stack = Prepend[filling[Tableaux[spec]] /. (Indeterminate|None|Null) -> Invisible[1], 0]
+      ];
+      Table[
+        If[j <= spec[[i]] && Length[stack] > 1, First[stack = Rest[stack]], Invisible[1]],
+        {i, Length[spec]},{j, Max[spec]}
+      ]
+    ],
+    Frame -> {
+      None, None,
+      Flatten[
+        Table[
+          {i,j} -> ((j <= spec[[i]])/.{
+            True -> Directive[Black, Thick],
+            False -> {}
+          }),
+          {i, Length[spec]}, {j, Max[spec]}
+        ]
+      ]
+    },
+    FrameStyle -> Directive[LightGray, Thin],
+    ItemSize -> All
+  ]
+]
+
+
 (* $MaxTableauPrintPoints                      *)
 (* =========================================== *)
 
@@ -78,6 +136,7 @@ TableauQ[expr_] := And[
     Length[expr] == 2 && Length[expr[[2]]] <= Total[expr[[1]]] && ListQ[expr[[2]]]
   ]
 ];
+
 
 End[] (* `Private` *)
 
