@@ -73,6 +73,9 @@ Interpretation[
 Tableau[spec_, func_Symbol] := Tableau[spec, func[Tableau[spec]]]
 Tableau[spec_, func_Function] := Tableau[spec, func[Tableau[spec]]]
 
+(* messages *)
+Tableau::nepty = "The Tableau must be empty."; (* used by filling functions *)
+
 
 (* tableauChart (PRIVATE)                      *)
 (* =========================================== *)
@@ -82,9 +85,9 @@ SyntaxInformation[tableauChart] = {
 };
 
 tableauChart[Tableau[spec_, filling_:{}]] := If[spec == {},
-(* an empty Tableau is displayed as "1" *)
+  (* an empty Tableau is displayed as "1" *)
   Style[1, Large, Bold],
-(* a non-empty Tableau is displayed as a diagram *)
+  (* a non-empty Tableau is displayed as a diagram *)
   Grid[
     Module[{stack},
       If[ListQ[filling],
@@ -148,6 +151,26 @@ TableauQ[expr_] := And[
   ]
 ];
 
+
+(* TableauLetters                              *)
+(* =========================================== *)
+
+SyntaxInformation[TableauLetters] = {
+  (* TableauLetters must have at least one argument *)
+  "ArgumentsPattern" -> {__}
+};
+
+TableauLetters[Tableau[spec_], shift_Integer:0] := Flatten[
+  Table[
+    ConstantArray[
+      StringJoin@FromLetterNumber[1 + IntegerDigits[i - 1 + shift, 26, Ceiling@Log[26, 1 + Length[spec] + shift]]],
+      spec[[i]]
+    ],
+    {i, Length[spec]}
+  ]
+]
+
+TableauLetters[Tableau[_, __], ___] := Message[Tableau::nepty]
 
 End[] (* `Private` *)
 
