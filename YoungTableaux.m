@@ -172,6 +172,24 @@ TableauLetters[Tableau[spec_], shift_Integer:0] := Flatten[
 
 TableauLetters[Tableau[_, __], ___] := Message[Tableau::nepty]
 
+
+(* TableauDistances                            *)
+(* =========================================== *)
+
+SyntaxInformation[TableauDistances] = {
+  (* TableauDistances must have at least one argument *)
+  "ArgumentsPattern" -> {__}
+};
+
+TableauDistances[Tableau[spec_, ___],n_:0] := Flatten@Table[
+  If[j <= spec[[i]], n-i+j, Nothing],
+  {i, Length[spec]},
+  {j, spec[[1]]}
+]
+
+TableauDistances[Tableau[_, __], ___] := Message[Tableau::nepty]
+
+
 End[] (* `Private` *)
 
 EndPackage[]
