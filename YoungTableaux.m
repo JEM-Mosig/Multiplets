@@ -22,6 +22,10 @@ If[!ValueQ[TableauQ::usage],
   TableauQ::usage = "TableauQ[expr] checks, whether expr is a well defined Young Tableau.";
 ];
 
+If[!ValueQ[ValidTableauQ::usage],
+    ValidTableauQ::usage = "ValidTableauQ[t] gives False, if t is not a Tableaux, or boxes with the same label appear in the same column or the entries do not give a lattice permutation. Otherwise it gives True.";
+];
+
 If[!ValueQ[TableauDimension::usage],
   TableauDimension::usage = "TableauDimension[tab, n] gives the dimension of the Young Tableau tab for the SU(n) case.";
 ];
@@ -187,6 +191,47 @@ TableauQ[expr_] := And[
   ]
 ];
 
+
+(* ValidTableauQ                               *)
+(* =========================================== *)
+
+SetAttributes[ValidTableauQ, {Listable}];
+
+SyntaxInformation[ValidTableauQ] = {
+  (* ValidTableauQ must have exactly one argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+ValidTableauQ[Tableau[spec_]] := TableauQ[Tableau[spec]]
+
+ValidTableauQ[Tableau[spec_, fil_?ListQ]] := Module[{m,col,p,count,bins,i},
+  Catch[
+    If[!TableauQ[Tableau[spec, fil]], Throw[False]];
+
+    (** convert the given tableau to matrix form **)
+    m = TableauToMatrix[Tableau[spec, fil]];
+
+    (** boxes with the same label must not appear in the same column **)
+    For[col = 1, col <= First[spec], col++,
+      If[DeleteDuplicates[Transpose[m][[col]], (#1 == #2 && (Head[#1]=!=Indeterminate) && (Head[#2]=!=Indeterminate) && (Head[#1]=!=None) && (Head[#2]=!=None))&] =!= Transpose[m][[col]],
+        Throw[False]
+      ]
+    ];
+
+    (** entries must give lattice permutation **)
+    (* ToDo: check this *)
+    p = Join[Select[Flatten[Join[Reverse/@m]], (# =!= None && # =!= Indeterminate)&]];
+
+    bins = Sort[DeleteDuplicates[fil]];
+    count = ConstantArray[0, Length[bins]];
+    For[i = 1, i <= Length[p], i++,
+      count[[First[Flatten[Position[bins,p[[i]]]]]]]++;
+      If[Not@OrderedQ[Reverse[count]], Throw[False]]
+    ];
+
+    True
+  ]
+]
 
 
 (* TableauToMatrix                             *)
