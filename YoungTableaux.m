@@ -42,6 +42,26 @@ If[!ValueQ[$MaxTableauPrintPoints::usage],
     $MaxTableauPrintPoints::usage = "$MaxTableauPrintPoints is an integer which controls up to what number of points a Tableau is presented graphically in StandardForm.";
 ];
 
+If[!ValueQ[TableauClear::usage],
+    TableauClear::usage = "TableauClear[tab] removes the filling of the given Young Tableau tab.";
+];
+
+If[!ValueQ[TableauFirst::usage],
+    TableauFirst::usage = "TableauFirst[tab] gives the label of the upper right box of the given Young Tableaux tab.";
+];
+
+If[!ValueQ[TableauRest::usage],
+    TableauRest::usage = "TableauRest[tab] returns the Tableaux tab with the upper right box removed. The result is not necessarily a proper Young Tableaux.";
+];
+
+If[!ValueQ[TableauAppend::usage],
+    TableauAppend::usage = "TableauAppend[tab, entry, row] appends a box with label entry at the end of the row row.";
+];
+
+If[!ValueQ[TableauSimplify::usage],
+    TableauSimplify::usage = "TableauSimplify[tab, n] removes all columns of length n from the given Tableaux tab.";
+];
+
 Begin["`Private`"]
 
 
