@@ -55,7 +55,7 @@ If[!ValueQ[TableauRest::usage],
 ];
 
 If[!ValueQ[TableauAppend::usage],
-    TableauAppend::usage = "TableauAppend[tab, entry, row] appends a box with label entry at the end of the row row.";
+    TableauAppend::usage = "TableauAppend[tab, row, entry] appends a box with label entry at the end of the row row.";
 ];
 
 If[!ValueQ[TableauSimplify::usage],
@@ -322,6 +322,46 @@ TableauRest[Tableau[{}]] = None;
 TableauRest[Tableau[{},{}]] = None;
 TableauRest[None] = None;
 
+
+(* TableauAppend                                 *)
+(* =========================================== *)
+
+SyntaxInformation[TableauAppend] = {
+  (* TableauAppend has at least two arguments *)
+  "ArgumentsPattern" -> {_, __}
+};
+
+TableauAppend[Tableau[spec_List, fil_List], row_, entry_:None] :=
+If[row <= Length[spec],
+  (* append to one of the existing rows *)
+  With[{s = ReplacePart[spec, row -> (spec[[row]] + 1)]},
+    Tableau[s, Insert[PadRight[fil, Total[spec], None], entry, 1 + Total[spec[[;;row]]]]] /.
+        replaceEmptyFillings
+  ],
+  If[row > Length[spec] + 1,
+    Message[TableauAppend::tl, row, Length[spec]];
+    $Failed
+    ,
+    (* append below the Tableaux (add a new row) *)
+    With[{s = Append[spec, 1]},
+      Tableau[s, Append[PadRight[fil, Total[spec], None], entry]] /.
+          replaceEmptyFillings
+    ]
+  ]
+]
+
+(* use this rule to simplify Tableau expressions by removing empty fillings (in the end) *)
+replaceEmptyFillings = {
+  (* replace Tableau[spec, {}] or Tableau[spec, {None, None, ...}] with Tableau[spec] *)
+  Tableau[s_, {None...}] :> Tableau[s],
+  (* drop final None entries *)
+  Tableau[s_, {f__, None..}] :> Tableau[s, {f}]
+}
+
+(* deal with un-filled tableaux *)
+TableauAppend[Tableau[spec_], rest__] := TableauAppend[Tableau[spec, {}], rest]
+
+TableauAppend::tl = "Cannot append in row `1` when Tableau has only `2` rows.";
 
 End[] (* `Private` *)
 
