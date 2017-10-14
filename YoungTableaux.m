@@ -259,6 +259,33 @@ SyntaxInformation[TableauClear] = {
 TableauClear[Tableau[spec_, fil_]] := Tableau[spec];
 TableauClear[Tableau[spec_]] := Tableau[spec];
 
+
+(* TableauFirst                                *)
+(* =========================================== *)
+
+SetAttributes[TableauFirst, {Listable}];
+
+SyntaxInformation[TableauFirst] = {
+  (* TableauFirst must have exactly one argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+TableauFirst[Tableau[spec_List, fil_List]] :=
+If[
+  Length[spec] > 0,
+  If[Length[fil] >= First[spec],
+    (* return upper right box label *)
+    fil[[First[spec]]],
+    (* no label specified for upper right box *)
+    Message[General::partw, First[spec], fil]; $Failed
+  ],
+  (* not enough boxes *)
+  Message[General::partw, 1, spec]; $Failed
+]
+
+TableauFirst[Tableau[spec_List]] := TableauFirst[Tableau[spec, {}]]
+
+
 End[] (* `Private` *)
 
 EndPackage[]
