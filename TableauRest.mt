@@ -12,19 +12,19 @@ VerificationTest[
 ]
 
 VerificationTest[
-  TableauxRest[Tableaux[{}]]
+  TableauRest[Tableau[{}]]
   ,
   None
 ]
 
 VerificationTest[
-  TableauxRest[Tableaux[{},{}]]
+  TableauRest[Tableau[{},{}]]
   ,
   None
 ]
 
 VerificationTest[
-  TableauxRest[None]
+  TableauRest[None]
   ,
   None
 ]
