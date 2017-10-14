@@ -400,6 +400,39 @@ TableauSimplify[Tableau[spec_List, filling_List], groupDegree_Integer] := Module
 TableauSimplify[Tableau[spec_], groupDegree_Integer] := TableauSimplify[Tableau[spec, {}], groupDegree]
 
 
+(* TableauSum                                  *)
+(* =========================================== *)
+
+SetAttributes[TableauSum, {
+  Flat, (* associative *)
+  OneIdentity, (* the sum of one element is the element *)
+  Orderless (* commutative *)
+}];
+
+(* print visual representation in TraditionalForm *)
+Format[t:TableauSum[terms__], TraditionalForm] :=
+  Interpretation[
+    Row@Riffle[List@@t, " \[CirclePlus] "],
+    t
+  ]
+
+
+(* TableauProduct                              *)
+(* =========================================== *)
+
+SetAttributes[TableauProduct, {
+  Flat, (* associative *)
+  OneIdentity (* the product of one element is the element *)
+}];
+
+(* print visual representation in TraditionalForm *)
+Format[t:TableauProduct[terms__], TraditionalForm] :=
+  Interpretation[
+    Row@Riffle[List@@t, " \[CircleTimes] "],
+    t
+  ]
+
+
 End[] (* `Private` *)
 
 EndPackage[]
