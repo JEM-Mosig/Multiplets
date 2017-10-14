@@ -246,6 +246,19 @@ Module[{numBoxes, d, h},
 ]
 
 
+(* TableauClear                                *)
+(* =========================================== *)
+
+SetAttributes[TableauClear, {Listable}];
+
+SyntaxInformation[TableauClear] = {
+  (* TableauClear must have exactly one argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+TableauClear[Tableau[spec_, fil_]] := Tableau[spec];
+TableauClear[Tableau[spec_]] := Tableau[spec];
+
 End[] (* `Private` *)
 
 EndPackage[]
