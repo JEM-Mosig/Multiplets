@@ -112,7 +112,7 @@ tableauChart[Tableau[spec_, filling_:{}]] := If[spec == {},
     Module[{stack},
       If[ListQ[filling],
         stack = Prepend[filling /. (Indeterminate|None|Null) -> Invisible[1], 0],
-        stack = Prepend[filling[Tableaux[spec]] /. (Indeterminate|None|Null) -> Invisible[1], 0]
+        stack = Prepend[filling[Tableau[spec]] /. (Indeterminate|None|Null) -> Invisible[1], 0]
       ];
       Table[
         If[j <= spec[[i]] && Length[stack] > 1, First[stack = Rest[stack]], Invisible[1]],
