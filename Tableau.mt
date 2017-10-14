@@ -68,7 +68,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Tableau[ConstantArray[1, 30], TableauLetters]
+  Tableau[Evaluate@ConstantArray[1, 30], TableauLetters]
   ,
   Tableau[{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {
