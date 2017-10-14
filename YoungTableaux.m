@@ -323,7 +323,7 @@ TableauRest[Tableau[{},{}]] = None;
 TableauRest[None] = None;
 
 
-(* TableauAppend                                 *)
+(* TableauAppend                               *)
 (* =========================================== *)
 
 SyntaxInformation[TableauAppend] = {
@@ -362,6 +362,38 @@ replaceEmptyFillings = {
 TableauAppend[Tableau[spec_], rest__] := TableauAppend[Tableau[spec, {}], rest]
 
 TableauAppend::tl = "Cannot append in row `1` when Tableau has only `2` rows.";
+
+
+
+(* TableauSimplify                             *)
+(* =========================================== *)
+
+SyntaxInformation[TableauSimplify] = {
+  (* TableauSimplify must have exactly two arguments *)
+  "ArgumentsPattern" -> {_, _}
+};
+
+TableauSimplify[Tableau[spec_List, filling_List], groupDegree_Integer] := Module[{fil, newSpec, newFil},
+  Catch[
+    If[spec == {}, Throw[Tableau[{}]]];
+    fil = PadRight[filling, Total[spec], None];
+
+    (* delete columns with groupDegree boxes *)
+    If[Length[spec] >= groupDegree,
+      newSpec = (#-1)& /@ spec;
+      While[newSpec != {} && Last[newSpec] <= 0, newSpec = Most[newSpec]];
+      newFil = Delete[fil, List /@ Prepend[Table[Fold[Plus, 1, spec[[;;i]]], {i, Length[spec] - 1}], 1]];
+      TableauSimplify[Tableau[Evaluate@newSpec, newFil], groupDegree]
+      ,
+      newSpec = spec;
+      While[newSpec != {} && Last[newSpec] <= 0, newSpec = Most[newSpec]];
+      Tableau[Evaluate@newSpec, fil]
+    ]
+  ] /. replaceEmptyFillings
+]
+
+TableauSimplify[Tableau[spec_], groupDegree_Integer] := TableauSimplify[Tableau[spec, {}], groupDegree]
+
 
 End[] (* `Private` *)
 
