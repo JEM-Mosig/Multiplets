@@ -297,21 +297,17 @@ SyntaxInformation[TableauRest] = {
 TableauRest[Tableau[spec_List, fil_List]] := If[First[spec] == 1,
   (* there is only one element in the top row *)
   Tableau[
-    Drop[spec, 1],
+    Evaluate@Drop[spec, 1],
     If[Length[fil] > 1, Drop[fil, 1], {}]
   ],
   (* the top row contains more than one element *)
-  (* shorten the first row by one and keep the lengths of the others *)
-  (* use With because Tableau has attribute HoldFirst *)
-  With[{s = {First[spec]-1}~Join~Rest[spec]},
-    Tableau[
-      s
-      ,
-      (* drop the last filling element, if it exists *)
-      If[Length[fil] >= First[spec],
-        Drop[fil, {First[spec]}],
-        fil
-      ]
+  Tableau[
+    (* shorten the first row by one and keep the lengths of the others *)
+    Evaluate[{First[spec]-1}~Join~Rest[spec]],
+    (* drop the last filling element, if it exists *)
+    If[Length[fil] >= First[spec],
+      Drop[fil, {First[spec]}],
+      fil
     ]
   ]
 ]
@@ -334,19 +330,20 @@ SyntaxInformation[TableauAppend] = {
 TableauAppend[Tableau[spec_List, fil_List], row_, entry_:None] :=
 If[row <= Length[spec],
   (* append to one of the existing rows *)
-  With[{s = ReplacePart[spec, row -> (spec[[row]] + 1)]},
-    Tableau[s, Insert[PadRight[fil, Total[spec], None], entry, 1 + Total[spec[[;;row]]]]] /.
-        replaceEmptyFillings
-  ],
+  Tableau[
+    Evaluate@ReplacePart[spec, row -> (spec[[row]] + 1)],
+    Insert[PadRight[fil, Total[spec], None], entry, 1 + Total[spec[[;;row]]]]
+  ] /. replaceEmptyFillings
+  ,
   If[row > Length[spec] + 1,
     Message[TableauAppend::tl, row, Length[spec]];
     $Failed
     ,
     (* append below the Tableaux (add a new row) *)
-    With[{s = Append[spec, 1]},
-      Tableau[s, Append[PadRight[fil, Total[spec], None], entry]] /.
-          replaceEmptyFillings
-    ]
+    Tableau[
+      Evaluate@Append[spec, 1],
+      Append[PadRight[fil, Total[spec], None], entry]
+    ] /. replaceEmptyFillings
   ]
 ]
 
