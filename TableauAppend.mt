@@ -14,7 +14,7 @@ VerificationTest[
 VerificationTest[
   TableauAppend[Tableau[{2, 1}], 1, "x"]
   ,
-  Tableau[{3, 1}, {None, None, "x"}]
+  Tableau[{3, 1}, {Empty, Empty, "x"}]
 ]
 
 VerificationTest[
@@ -32,7 +32,7 @@ VerificationTest[
 VerificationTest[
   TableauAppend[Tableau[{2, 1}, {1, 2, 3}], 1]
   ,
-  Tableau[{3, 1}, {1, 2, None, 3}]
+  Tableau[{3, 1}, {1, 2, Empty, 3}]
 ]
 
 VerificationTest[

@@ -123,8 +123,8 @@ tableauChart[Tableau[spec_, filling_:{}]] := If[spec == {},
   Grid[
     Module[{stack},
       If[ListQ[filling],
-        stack = Prepend[filling /. (Indeterminate|None|Null) -> Invisible[1], 0],
-        stack = Prepend[filling[Tableau[spec]] /. (Indeterminate|None|Null) -> Invisible[1], 0]
+        stack = Prepend[filling /. {Empty -> Invisible[1]}, 0],
+        stack = Prepend[filling[Tableau[spec]] /. {Empty -> Invisible[1]}, 0]
       ];
       Table[
         If[j <= spec[[i]] && Length[stack] > 1, First[stack = Rest[stack]], Invisible[1]],
@@ -339,12 +339,12 @@ SyntaxInformation[TableauAppend] = {
   "ArgumentsPattern" -> {_, __}
 };
 
-TableauAppend[Tableau[spec_List, fil_List], row_, entry_:None] :=
+TableauAppend[Tableau[spec_List, fil_List], row_, entry_:Empty] :=
 If[row <= Length[spec],
   (* append to one of the existing rows *)
   Tableau[
     Evaluate@ReplacePart[spec, row -> (spec[[row]] + 1)],
-    Insert[PadRight[fil, Total[spec], None], entry, 1 + Total[spec[[;;row]]]]
+    Insert[PadRight[fil, Total[spec], Empty], entry, 1 + Total[spec[[;;row]]]]
   ] /. replaceEmptyFillings
   ,
   If[row > Length[spec] + 1,
@@ -354,7 +354,7 @@ If[row <= Length[spec],
     (* append below the Tableaux (add a new row) *)
     Tableau[
       Evaluate@Append[spec, 1],
-      Append[PadRight[fil, Total[spec], None], entry]
+      Append[PadRight[fil, Total[spec], Empty], entry]
     ] /. replaceEmptyFillings
   ]
 ]
@@ -362,9 +362,9 @@ If[row <= Length[spec],
 (* use this rule to simplify Tableau expressions by removing empty fillings (in the end) *)
 replaceEmptyFillings = {
   (* replace Tableau[spec, {}] or Tableau[spec, {None, None, ...}] with Tableau[spec] *)
-  Tableau[s_, {None...}] :> Tableau[s],
+  Tableau[s_, {Empty...}] :> Tableau[s],
   (* drop final None entries *)
-  Tableau[s_, {f__, None..}] :> Tableau[s, {f}]
+  Tableau[s_, {f__, Empty..}] :> Tableau[s, {f}]
 }
 
 (* deal with un-filled tableaux *)
@@ -385,7 +385,7 @@ SyntaxInformation[TableauSimplify] = {
 TableauSimplify[Tableau[spec_List, filling_List], groupDegree_Integer] := Module[{fil, newSpec, newFil},
   Catch[
     If[spec == {}, Throw[Tableau[{}]]];
-    fil = PadRight[filling, Total[spec], None];
+    fil = PadRight[filling, Total[spec], Empty];
 
     (* delete columns with groupDegree boxes *)
     If[Length[spec] >= groupDegree,
