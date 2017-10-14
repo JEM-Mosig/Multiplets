@@ -47,11 +47,11 @@ If[!ValueQ[TableauClear::usage],
 ];
 
 If[!ValueQ[TableauFirst::usage],
-    TableauFirst::usage = "TableauFirst[tab] gives the label of the upper right box of the given Young Tableaux tab.";
+    TableauFirst::usage = "TableauFirst[tab] gives the label of the upper right box of the given Young Tableau tab.";
 ];
 
 If[!ValueQ[TableauRest::usage],
-    TableauRest::usage = "TableauRest[tab] returns the Tableaux tab with the upper right box removed. The result is not necessarily a proper Young Tableaux.";
+    TableauRest::usage = "TableauRest[tab] returns the Tableau tab with the upper right box removed. The result is not necessarily a proper Young Tableau.";
 ];
 
 If[!ValueQ[TableauAppend::usage],
@@ -59,7 +59,7 @@ If[!ValueQ[TableauAppend::usage],
 ];
 
 If[!ValueQ[TableauSimplify::usage],
-    TableauSimplify::usage = "TableauSimplify[tab, n] removes all columns of length n from the given Tableaux tab.";
+    TableauSimplify::usage = "TableauSimplify[tab, n] removes all columns of length n from the given Tableau tab.";
 ];
 
 Begin["`Private`"]
