@@ -6,7 +6,7 @@ BeginTestSection["TableauSimplify.mt"]
 VerificationTest[
   TableauSimplify[Tableau[{2, 1}], 2]
   ,
-  Tabelau[{1}]
+  Tableau[{1}]
 ]
 
 VerificationTest[
