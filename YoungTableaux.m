@@ -62,6 +62,10 @@ If[!ValueQ[TableauSimplify::usage],
     TableauSimplify::usage = "TableauSimplify[tab, n] removes all columns of length n from the given Tableau tab.";
 ];
 
+If[!ValueQ[TableauExpand::usage],
+  TableauExpand::usage = "TableauExpand[p] expands the TableauProduct p into a TableauSum.";
+];
+
 If[!ValueQ[TableauSum::usage],
     TableauSum::usage = "TableauSum[t1, t2, ...] represents the sum of tableaux t1, t2, etc.";
 ];
@@ -398,6 +402,15 @@ TableauSimplify[Tableau[spec_List, filling_List], groupDegree_Integer] := Module
 ]
 
 TableauSimplify[Tableau[spec_], groupDegree_Integer] := TableauSimplify[Tableau[spec, {}], groupDegree]
+
+
+(* TableauExpand                               *)
+(* =========================================== *)
+
+TableauExpand[TableauProduct[a___, sum_TableauSum, b___]] := TableauSum@@Table[
+  TableauProduct[sum[[i]], a, b],
+  {i, Length[sum]}
+]
 
 
 (* TableauSum                                  *)
