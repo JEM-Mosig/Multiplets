@@ -286,6 +286,43 @@ If[
 TableauFirst[Tableau[spec_List]] := TableauFirst[Tableau[spec, {}]]
 
 
+(* TableauRest                                 *)
+(* =========================================== *)
+
+SyntaxInformation[TableauRest] = {
+  (* TableauRest must have exactly one argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+TableauRest[Tableau[spec_List, fil_List]] := If[First[spec] == 1,
+  (* there is only one element in the top row *)
+  Tableau[
+    Drop[spec, 1],
+    If[Length[fil] > 1, Drop[fil, 1], {}]
+  ],
+  (* the top row contains more than one element *)
+  (* shorten the first row by one and keep the lengths of the others *)
+  (* use With because Tableau has attribute HoldFirst *)
+  With[{s = {First[spec]-1}~Join~Rest[spec]},
+    Tableau[
+      s
+      ,
+      (* drop the last filling element, if it exists *)
+      If[Length[fil] >= First[spec],
+        Drop[fil, {First[spec]}],
+        fil
+      ]
+    ]
+  ]
+]
+
+TableauRest[Tableau[spec_List]] := TableauRest[Tableau[spec, {}]]
+
+TableauRest[Tableau[{}]] = None;
+TableauRest[Tableau[{},{}]] = None;
+TableauRest[None] = None;
+
+
 End[] (* `Private` *)
 
 EndPackage[]
