@@ -25,4 +25,21 @@ VerificationTest[
   }
 ]
 
+VerificationTest[
+  TableauSimplify[
+    {
+      Tableau[{5, 3, 3, 1, 1}],
+      Tableau[{4, 2, 2}],
+      Tableau[{2, 1}]
+    },
+    3
+  ]
+  ,
+  {
+    TableauSimplify[Tableau[{5, 3, 3, 1, 1}], 3],
+    TableauSimplify[Tableau[{4, 2, 2}], 3],
+    TableauSimplify[Tableau[{2, 1}], 3]
+  }
+]
+
 EndTestSection[]

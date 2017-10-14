@@ -477,6 +477,8 @@ TableauSimplify[Tableau[spec_List, filling_List], groupDegree_Integer] := Module
 
 TableauSimplify[Tableau[spec_], groupDegree_Integer] := TableauSimplify[Tableau[spec, {}], groupDegree]
 
+TableauSimplify[tabs_List, groupDegree_] := TableauSimplify[#, groupDegree]& /@ tabs
+
 
 (* TableauExpand                               *)
 (* =========================================== *)
