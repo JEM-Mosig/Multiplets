@@ -62,6 +62,14 @@ If[!ValueQ[TableauSimplify::usage],
     TableauSimplify::usage = "TableauSimplify[tab, n] removes all columns of length n from the given Tableau tab.";
 ];
 
+If[!ValueQ[TableauSum::usage],
+    TableauSum::usage = "TableauSum[t1, t2, ...] represents the sum of tableaux t1, t2, etc.";
+];
+
+If[!ValueQ[TableauProduct::usage],
+    TableauProduct::usage = "TableauProduct[t1, t2, ...] represents the product of tableaux t1, t2, etc.";
+];
+
 Begin["`Private`"]
 
 
