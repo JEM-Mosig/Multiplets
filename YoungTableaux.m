@@ -74,6 +74,10 @@ If[!ValueQ[TableauProduct::usage],
     TableauProduct::usage = "TableauProduct[t1, t2, ...] represents the product of tableaux t1, t2, etc.";
 ];
 
+If[!ValueQ[TableauToMatrix::usage],
+    TableauToMatrix::usage = "TableauToMatrix[t] returns a matrix corresponding to the Tableau t.";
+];
+
 Begin["`Private`"]
 
 
@@ -182,6 +186,31 @@ TableauQ[expr_] := And[
     Length[expr] == 2 && Length[expr[[2]]] <= Total[expr[[1]]] && ListQ[expr[[2]]]
   ]
 ];
+
+
+
+(* TableauToMatrix                             *)
+(* =========================================== *)
+
+SyntaxInformation[TableauToMatrix] = {
+  (* TableauToMatrix must have exactly one argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+TableauToMatrix[Tableau[spec_, filling_:{}]] := With[
+  {
+    fil = PadRight[filling, Total[spec], Empty]
+  },
+  Table[
+    With[{
+      a = 1 + Total[spec[[;;(row - 1)]]],
+      d = spec[[row]] - 1
+    },
+      PadRight[fil[[a;;Min[a + d, Length[fil]]]], Max[spec], None]
+    ],
+    {row, 1, Length[spec]}
+  ]
+]
 
 
 (* TableauLetters                              *)
