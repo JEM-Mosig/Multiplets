@@ -345,6 +345,10 @@ SyntaxInformation[TableauClear] = {
 TableauClear[Tableau[spec_, fil_]] := Tableau[spec];
 TableauClear[Tableau[spec_]] := Tableau[spec];
 
+(* automatically thread of TableauSum and TableauProduct *)
+TableauClear[s:TableauSum[terms__]] := TableauClear /@ s;
+TableauClear[p:TableauProduct[terms__]] := TableauClear /@ p;
+
 
 (* TableauFirst                                *)
 (* =========================================== *)
