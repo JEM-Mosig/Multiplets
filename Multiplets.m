@@ -46,6 +46,14 @@ If[!ValueQ[$MaxMultipletPrintDimensionSU3::usage],
   $MaxMultipletPrintDimensionSU3::usage = "$MaxMultipletPrintDimensionSU3 is an integer which controls up to what dimension a SU(3) Multiplet is presented graphically in StandardForm.";
 ];
 
+If[!ValueQ[TableauFromMultiplet::usage],
+    TableauFromMultiplet::usage = "TableauFromMultiplet[m] returns the Tableau which corresponds to the Multiplet m.";
+];
+
+If[!ValueQ[TableauToMultiplet::usage],
+    TableauToMultiplet::usage = "TableauToMultiplet[t, n] returns the SU(n) Multiplet which corresponds to the Tableau t. By default, n = 3.";
+];
+
 Begin["`Private`"]
 
 End[] (* `Private` *)
