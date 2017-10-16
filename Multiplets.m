@@ -30,6 +30,10 @@ If[!ValueQ[MultipletProduct::usage],
     MultipletProduct::usage = "MultipletProduct[m1, m2] represents the product of the multiplets m1 and m2.";
 ];
 
+If[!ValueQ[MultipletReduce::usage],
+    MultipletReduce::usage = "MultipletReduce[p] convertes the MultipletProduct p into a MultipletSum of irreducible representations.";
+];
+
 If[!ValueQ[MultipletDimension::usage],
   MultipletDimension::usage = "MultipletDimension[m] gives the dimension of the multiplet m.";
 ];
