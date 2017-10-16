@@ -7,25 +7,25 @@ BeginTestSection["Tableau.mt"]
 (* ====================================== *)
 
 VerificationTest[
-  $MaxTableauPrintPoints = -1
+  $MaxTableauPrintBoxes = -1
   ,
-  $MaxTableauPrintPoints
+  $MaxTableauPrintBoxes
   ,
-  {$MaxTableauPrintPoints::intOnly}
+  {$MaxTableauPrintBoxes::intOnly}
 ]
 
 VerificationTest[
-  $MaxTableauPrintPoints = 1.1
+  $MaxTableauPrintBoxes = 1.1
   ,
-  $MaxTableauPrintPoints
+  $MaxTableauPrintBoxes
   ,
-  {$MaxTableauPrintPoints::intOnly}
+  {$MaxTableauPrintBoxes::intOnly}
 ]
 
 VerificationTest[
-  Module[{val = $MaxTableauPrintPoints},
-    $MaxTableauPrintPoints = Infinity;
-    $MaxTableauPrintPoints = val;
+  Module[{val = $MaxTableauPrintBoxes},
+    $MaxTableauPrintBoxes = Infinity;
+    $MaxTableauPrintBoxes = val;
   ]
   ,
   Null
@@ -34,9 +34,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Module[{val = $MaxTableauPrintPoints},
-    $MaxTableauPrintPoints = 23;
-    $MaxTableauPrintPoints = val;
+  Module[{val = $MaxTableauPrintBoxes},
+    $MaxTableauPrintBoxes = 23;
+    $MaxTableauPrintBoxes = val;
   ]
   ,
   Null

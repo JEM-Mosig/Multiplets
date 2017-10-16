@@ -42,8 +42,8 @@ If[!ValueQ[TableauHooks::usage],
     TableauHooks::usage = "TableauHooks[tab] fills a given Tableau tab with hook distances.";
 ];
 
-If[!ValueQ[$MaxTableauPrintPoints::usage],
-    $MaxTableauPrintPoints::usage = "$MaxTableauPrintPoints is an integer which controls up to what number of points a Tableau is presented graphically in StandardForm.";
+If[!ValueQ[$MaxTableauPrintBoxes::usage],
+    $MaxTableauPrintBoxes::usage = "$MaxTableauPrintBoxes is an integer which controls up to what number of points a Tableau is presented graphically in StandardForm.";
 ];
 
 If[!ValueQ[TableauClear::usage],
@@ -104,7 +104,7 @@ Format[t:Tableau[spec_, ___], StandardForm] :=
 Interpretation[
   tableauChart[t],
   t
-] /; Total[spec] <= $MaxTableauPrintPoints
+] /; Total[spec] <= $MaxTableauPrintBoxes
 
 (* always print visual representation in TraditionalForm *)
 Format[t:Tableau[spec_, ___], TraditionalForm] :=
@@ -165,15 +165,15 @@ tableauChart[Tableau[spec_, filling_:{}]] := If[spec == {},
 (* =========================================== *)
 
 (* set the default value *)
-$MaxTableauPrintPoints = 300;
+$MaxTableauPrintBoxes = 300;
 
 (* prevent the user from setting invalid values *)
-$MaxTableauPrintPoints /: HoldPattern[(Set | SetDelayed)[$MaxTableauPrintPoints, x_]] := (
-  Message[$MaxTableauPrintPoints::intOnly];
-  $MaxTableauPrintPoints
+$MaxTableauPrintBoxes /: HoldPattern[(Set | SetDelayed)[$MaxTableauPrintBoxes, x_]] := (
+  Message[$MaxTableauPrintBoxes::intOnly];
+  $MaxTableauPrintBoxes
 ) /; (!MemberQ[{Integer, DirectedInfinity}, Head[x]] || Negative[x])
 
-$MaxTableauPrintPoints::intOnly = "$MaxTableauPrintPoints must be a non-negative integer or Infinity.";
+$MaxTableauPrintBoxes::intOnly = "$MaxTableauPrintBoxes must be a non-negative integer or Infinity.";
 
 
 (* TableauQ                                    *)
