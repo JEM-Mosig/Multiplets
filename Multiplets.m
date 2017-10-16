@@ -56,6 +56,25 @@ If[!ValueQ[TableauToMultiplet::usage],
 
 Begin["`Private`"]
 
+
+(* MultipletQ                                  *)
+(* =========================================== *)
+
+SyntaxInformation[MultipletQ] = {
+  (* MultipletQ must be called with a single argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+MultipletQ[expr_] := TrueQ@Quiet@And[
+  Head[expr] === Multiplet,
+  Length[expr] == 1,
+  Head[expr[[1]]] === List,
+  VectorQ[expr[[1]]],
+  AllTrue[expr[[1]], IntegerQ],
+  AllTrue[expr[[1]], NonNegative]
+]
+
+
 End[] (* `Private` *)
 
 EndPackage[]
