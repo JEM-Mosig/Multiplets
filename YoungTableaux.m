@@ -212,15 +212,11 @@ ValidTableauQ[Tableau[spec_, fil_?ListQ]] := Module[{m,col,p,count,bins,i},
     m = TableauToMatrix[Tableau[spec, fil]];
 
     (** boxes with the same label must not appear in the same column **)
-    For[col = 1, col <= First[spec], col++,
-      If[DeleteDuplicates[Transpose[m][[col]], (#1 == #2 && (Head[#1]=!=Indeterminate) && (Head[#2]=!=Indeterminate) && (Head[#1]=!=None) && (Head[#2]=!=None))&] =!= Transpose[m][[col]],
-        Throw[False]
-      ]
-    ];
+    If[!AllTrue[Transpose[m] /. (Empty|None) -> Nothing, DuplicateFreeQ], Throw[False]];
 
     (** entries must give lattice permutation **)
     (* ToDo: check this *)
-    p = Join[Select[Flatten[Join[Reverse/@m]], (# =!= None && # =!= Indeterminate)&]];
+    p = Join[Select[Flatten[Join[Reverse/@m]], (# =!= None && # =!= Empty)&]];
 
     bins = Sort[DeleteDuplicates[fil]];
     count = ConstantArray[0, Length[bins]];
