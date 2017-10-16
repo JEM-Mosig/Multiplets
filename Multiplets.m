@@ -12,7 +12,7 @@
 (* :Keywords: multiplet, group theory, quantum physics *)
 (* :Discussion: *)
 
-BeginPackage["Multiplets`"]
+BeginPackage["Multiplets`", {"YoungTableaux`"}]
 
 If[!ValueQ[Multiplet::usage],
     Multiplet::usage = "Multiplet[spec] is a wrapper for a general SU(n) Multiplet.";
