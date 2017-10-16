@@ -475,6 +475,8 @@ TableauSimplify[Tableau[spec_], groupDegree_Integer] := TableauSimplify[Tableau[
 
 TableauSimplify[tabs_List, groupDegree_] := TableauSimplify[#, groupDegree]& /@ tabs
 
+TableauSimplify[tabs_TableauSum, groupDegree_] := TableauSimplify[#, groupDegree]& /@ tabs
+
 
 (* TableauExpand                               *)
 (* =========================================== *)
