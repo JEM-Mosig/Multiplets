@@ -66,6 +66,10 @@ If[!ValueQ[TableauSimplify::usage],
     TableauSimplify::usage = "TableauSimplify[tab, n] removes all columns of length n from the given Tableau tab.";
 ];
 
+If[!ValueQ[TableauReduce::usage],
+    TableauReduce::usage = "TableauReduce[p, d] reduces the TableauProduct assuming degree d.";
+];
+
 If[!ValueQ[TableauExpand::usage],
   TableauExpand::usage = "TableauExpand[p] expands the TableauProduct p into a TableauSum.";
 ];
@@ -487,38 +491,107 @@ TableauExpand[TableauProduct[a___, sum_TableauSum, b___]] := TableauSum@@Table[
 ]
 
 
+(* TableauReduce                               *)
+(* =========================================== *)
+
+Options[TableauReduce] = {StepMonitor :> Null};
+
+SyntaxInformation[TableauReduce] = {
+  (* TableauReduce must have exactly two arguments *)
+  "ArgumentsPattern" -> {_, _, OptionsPattern[]}
+};
+
+TableauReduce[TableauProduct[t1_Tableau, t2_Tableau], deg_Integer, OptionsPattern[]] :=
+    tabReduce[TableauClear[t1], TableauClear[t2], deg, OptionValue[StepMonitor]]
+
+ClearAll[tabReduce];
+
+tabReduce[tab1_Tableau, tab2:Tableau[spec_], deg_Integer, monitor_] := tabReduce[tab1, Tableau[spec, TableauLetters], deg, monitor]
+
+tabReduce[tab1_Tableau, tab2:Tableau[spec2_, fil2_], deg_Integer, monitor_] :=
+Module[
+  {
+    tabA = tab1, tabB = tab2, entry, rest, result
+  },
+  (* take upper right entry of tabB *)
+  entry = TableauFirst[tabB];
+  (* add entry to each term in all possible ways *)
+  result = TableauSum@@(DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
+    Table[
+      TableauAppend[tabA, row, entry],
+      {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
+    ],
+    deg
+  ]);
+  (* what is left after we took the upper right entry *)
+  rest = TableauRest[tabB];
+  (* apply the StepMonitor *)
+  monitor[TableauProduct[result, rest]];
+  (* continue *)
+  If[rest~MatchQ~Tableau[{}, ___],
+    (* nothing is left *)
+    result,
+    (* something is left -> process product with sum *)
+    DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
+      tabReduce[result, rest, deg, monitor],
+      deg
+    ]
+  ]
+]
+
+tabReduce[a___, sum_TableauSum, b___, deg_Integer, monitor_] := (
+  TableauSum@@Table[
+    tabReduce[sum[[i]], a, b, deg, monitor],
+    {i, Length[sum]}
+  ]
+)
+
+tabReduce[tab1_Tableau, tab2_Tableau, tabMore__Tableau, deg_Integer, monitor_] := tabReduce[
+  tabReduce[tab1, tab2, deg, monitor],
+  tabMore,
+  deg, monitor
+]
+
+
 (* TableauSum                                  *)
 (* =========================================== *)
 
+(* print visual representation in TraditionalForm *)
+Format[t:TableauSum[_, __], TraditionalForm] :=
+  Interpretation[
+    Row@Riffle[List@@t, " \[CirclePlus] "],
+    t
+  ]
+
+TableauSum[x_Tableau] := x
+
+(* Note: the Flat attribute must be set after setting DownValues *)
+(* https://mathematica.stackexchange.com/q/5067/35390 *)
 SetAttributes[TableauSum, {
   Flat, (* associative *)
   OneIdentity, (* the sum of one element is the element *)
   Orderless (* commutative *)
 }];
 
-(* print visual representation in TraditionalForm *)
-Format[t:TableauSum[terms__], TraditionalForm] :=
-  Interpretation[
-    Row@Riffle[List@@t, " \[CirclePlus] "],
-    t
-  ]
-
 
 (* TableauProduct                              *)
 (* =========================================== *)
 
+(* print visual representation in TraditionalForm *)
+Format[t:TableauProduct[terms__], TraditionalForm] :=
+  Interpretation[
+    Row@Flatten@Riffle[If[Head[#] === TableauSum, {Style["(", Large], #, Style[")", Large]}, #]& /@ List@@t, " \[CircleTimes] "],
+    t
+  ]
+
+TableauProduct[x_Tableau] := x
+
+(* Note: the Flat attribute must be set after setting DownValues *)
+(* https://mathematica.stackexchange.com/q/5067/35390 *)
 SetAttributes[TableauProduct, {
   Flat, (* associative *)
   OneIdentity (* the product of one element is the element *)
 }];
-
-(* print visual representation in TraditionalForm *)
-Format[t:TableauProduct[terms__], TraditionalForm] :=
-  Interpretation[
-    Row@Riffle[List@@t, " \[CircleTimes] "],
-    t
-  ]
-
 
 End[] (* `Private` *)
 
