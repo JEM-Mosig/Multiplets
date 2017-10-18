@@ -15,4 +15,10 @@ VerificationTest[
   198450
 ]
 
+VerificationTest[
+  MultipletDimension[Multiplet[{4, 5}]]
+  ,
+  165
+]
+
 EndTestSection[]
