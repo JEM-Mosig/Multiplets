@@ -114,6 +114,22 @@ TableauFromMultiplet[Multiplet[mplet_List, ___], fil_] := Tableau[
   fil
 ]
 
+
+(* MultipletDimension                          *)
+(* =========================================== *)
+
+SetAttributes[MultipletDimension, {Listable}];
+
+SyntaxInformation[MultipletDimension] = {
+  (* MultipletDimension must be called with a single argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+MultipletDimension[m:Multiplet[spec_, ___]] := TableauDimension[
+  TableauFromMultiplet[m], Length[spec] + 1
+]
+
+
 End[] (* `Private` *)
 
 EndPackage[]
