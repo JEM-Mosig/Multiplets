@@ -89,6 +89,19 @@ MultipletQ[expr_] := TrueQ@Quiet@And[
 ]
 
 
+(* TableauToMultiplet                          *)
+(* =========================================== *)
+
+SyntaxInformation[TableauToMultiplet] = {
+  (* TableauToMultiplet must be called with at least one argument *)
+  "ArgumentsPattern" -> {_, _}
+};
+
+TableauToMultiplet[Tableau[spec_, ___], groupDegree_:3] := Multiplet[
+  PadRight[-Differences[Append[spec, 0]], groupDegree - 1, 0]
+]
+
+
 End[] (* `Private` *)
 
 EndPackage[]
