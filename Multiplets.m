@@ -102,6 +102,18 @@ TableauToMultiplet[Tableau[spec_, ___], groupDegree_:3] := Multiplet[
 ]
 
 
+(* TableauFromMultiplet                        *)
+(* =========================================== *)
+
+TableauFromMultiplet[Multiplet[mplet_List, ___]] := Tableau[
+  Evaluate@Select[Reverse@Accumulate@Reverse@mplet, Positive]
+]
+
+TableauFromMultiplet[Multiplet[mplet_List, ___], fil_] := Tableau[
+  Evaluate@Select[Reverse@Accumulate@Reverse@mplet, Positive],
+  fil
+]
+
 End[] (* `Private` *)
 
 EndPackage[]
