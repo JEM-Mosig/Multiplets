@@ -57,6 +57,20 @@ If[!ValueQ[TableauToMultiplet::usage],
 Begin["`Private`"]
 
 
+(* Multiplet                                   *)
+(* =========================================== *)
+
+Options[Multiplet] = {
+  (* control how the multiplet should be represented *)
+  (* "Plain", "Diagram", "Dimension" *)
+  OutputForm -> "Plain"
+};
+
+SyntaxInformation[Multiplet] = {
+  "ArgumentsPattern" -> {_, OptionsPattern[]}
+};
+
+
 (* MultipletQ                                  *)
 (* =========================================== *)
 
