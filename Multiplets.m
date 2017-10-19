@@ -63,7 +63,8 @@ Begin["`Private`"]
 Options[Multiplet] = {
   (* control how the multiplet should be represented *)
   (* "Plain", "Diagram", "Dimension" *)
-  OutputForm -> "Plain"
+  StandardForm -> "Dimension",
+  TraditionalForm -> "Dimension"
 };
 
 SyntaxInformation[Multiplet] = {
@@ -72,25 +73,29 @@ SyntaxInformation[Multiplet] = {
 
 (* print visual representation in StandardForm if small enough dimension in SU(2) *)
 Format[mplet:Multiplet[{a_Integer}, options:OptionsPattern[Multiplet]], StandardForm] :=
-    su2formatting[mplet, a, OptionValue[{options, Options[Multiplet]}, OutputForm]] /; And[
-        Nand[OptionValue[{options, Options[Multiplet]}, OutputForm] === "Diagram", a + 1 > $MaxMultipletPrintDimensionSU2],
-        OptionValue[{options, Options[Multiplet]}, OutputForm] =!= "Plain"
-      ]
+  su2formatting[mplet, a, OptionValue[{options, Options[Multiplet]}, StandardForm]] /;
+    And[
+      Nand[OptionValue[{options, Options[Multiplet]}, StandardForm] === "Diagram", a + 1 > $MaxMultipletPrintDimensionSU2],
+      OptionValue[{options, Options[Multiplet]}, StandardForm] =!= "Plain"
+    ]
 
 (* always use dimension form in TraditionalForm *)
 Format[mplet:Multiplet[{a_Integer}, options:OptionsPattern[Multiplet]], TraditionalForm] :=
-    su2formatting[mplet, a, "Dimension"]
+    su2formatting[mplet, a, OptionValue[{options, Options[Multiplet]}, TraditionalForm]] /;
+        OptionValue[{options, Options[Multiplet]}, TraditionalForm] =!= "Plain"
 
 (* print visual representation in StandardForm if small enough dimension in SU(3) *)
 Format[mplet:Multiplet[{a_Integer, b_Integer}, options:OptionsPattern[Multiplet]], StandardForm] :=
-    su3formatting[mplet, a, b, OptionValue[{options, Options[Multiplet]}, OutputForm]] /; And[
-      Nand[OptionValue[{options, Options[Multiplet]}, OutputForm] === "Diagram", (a+1)(b+1)(a+b+2) > 2 $MaxMultipletPrintDimensionSU3],
-      OptionValue[{options, Options[Multiplet]}, OutputForm] =!= "Plain"
+  su3formatting[mplet, a, b, OptionValue[{options, Options[Multiplet]}, StandardForm]] /;
+    And[
+      Nand[OptionValue[{options, Options[Multiplet]}, StandardForm] === "Diagram", (a+1)(b+1)(a+b+2) > 2 $MaxMultipletPrintDimensionSU3],
+      OptionValue[{options, Options[Multiplet]}, StandardForm] =!= "Plain"
     ]
 
 (* always use dimension form in TraditionalForm *)
 Format[mplet:Multiplet[{a_Integer, b_Integer}, options:OptionsPattern[Multiplet]], TraditionalForm] :=
-    su3formatting[mplet, a, b, "Dimension"]
+  su3formatting[mplet, a, b, OptionValue[{options, Options[Multiplet]}, TraditionalForm]] /;
+      OptionValue[{options, Options[Multiplet]}, TraditionalForm] =!= "Plain"
 
 ClearAll[su2formatting];
 su2formatting[mplet_, a_, form_] := Switch[form,
