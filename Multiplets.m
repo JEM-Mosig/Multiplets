@@ -307,6 +307,10 @@ MultipletDimension[m:Multiplet[spec_, ___]] := TableauDimension[
   TableauFromMultiplet[m], Length[spec] + 1
 ]
 
+MultipletDimension[m:Multiplet[{a_Integer}, ___]] := a + 1
+
+MultipletDimension[m:Multiplet[{a_Integer, b_Integer}, ___]] := Quotient[(a+1)(b+1)(a+b+2), 2]
+
 
 End[] (* `Private` *)
 
