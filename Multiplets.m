@@ -31,7 +31,7 @@ If[!ValueQ[MultipletProduct::usage],
 ];
 
 If[!ValueQ[MultipletReduce::usage],
-    MultipletReduce::usage = "MultipletReduce[p] convertes the MultipletProduct p into a MultipletSum of irreducible representations.";
+    MultipletReduce::usage = "MultipletReduce[p] converts the MultipletProduct p into a MultipletSum of irreducible representations.";
 ];
 
 If[!ValueQ[MultipletDimension::usage],
