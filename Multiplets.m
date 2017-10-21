@@ -335,7 +335,10 @@ MultipletReduce[MultipletProduct[terms__]] := With[{n = 1 + Length[{terms}[[1,1]
 (* print visual representation in TraditionalForm *)
 Format[m:MultipletSum[_, __], TraditionalForm] :=
     Interpretation[
-      Row@Riffle[List@@m, " \[CirclePlus] "],
+      Row@Riffle[
+        List@@m,
+        Tooltip[Style[" \[CirclePlus] ", Large], "MultipletSum"]
+      ],
       m
     ]
 
@@ -356,7 +359,10 @@ SetAttributes[MultipletSum, {
 (* print visual representation in TraditionalForm *)
 Format[m:MultipletProduct[terms__], TraditionalForm] :=
     Interpretation[
-      Row@Flatten@Riffle[If[Head[#] === MultipletSum, {Style["(", Large], #, Style[")", Large]}, #]& /@ List@@m, " \[CircleTimes] "],
+      Row@Flatten@Riffle[
+        If[Head[#] === MultipletSum, {Style["(", Large], #, Style[")", Large]}, #]& /@ List@@m,
+        Tooltip[Style[" \[CircleTimes] ", Large], "MultipletProduct"]
+      ],
       m
     ]
 
