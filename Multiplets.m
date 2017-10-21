@@ -272,7 +272,7 @@ MultipletQ[expr_] := TrueQ@Quiet@And[
 
 SyntaxInformation[TableauToMultiplet] = {
   (* TableauToMultiplet must be called with at least one argument *)
-  "ArgumentsPattern" -> {_, _}
+  "ArgumentsPattern" -> {__}
 };
 
 TableauToMultiplet[Tableau[spec_, ___], groupDegree_:3] := Multiplet[
