@@ -321,6 +321,55 @@ MultipletDimension[m:Multiplet[{a_Integer}, ___]] := a + 1
 MultipletDimension[m:Multiplet[{a_Integer, b_Integer}, ___]] := Quotient[(a+1)(b+1)(a+b+2), 2]
 
 
+(* MultipletReduce                             *)
+(* =========================================== *)
+
+MultipletReduce[MultipletProduct[terms__]] := With[{n = 1 + Length[{terms}[[1,1]]]},
+  TableauToMultiplet /@ MultipletSum@@TableauReduce[TableauProduct@@(TableauFromMultiplet@{terms}), n]
+]
+
+
+(* MultipletSum                                *)
+(* =========================================== *)
+
+(* print visual representation in TraditionalForm *)
+Format[m:MultipletSum[_, __], TraditionalForm] :=
+    Interpretation[
+      Row@Riffle[List@@m, " \[CirclePlus] "],
+      m
+    ]
+
+MultipletSum[x_Multiplet] := x
+
+(* Note: the Flat attribute must be set after setting DownValues *)
+(* https://mathematica.stackexchange.com/q/5067/35390 *)
+SetAttributes[MultipletSum, {
+  Flat, (* associative *)
+  OneIdentity, (* the sum of one element is the element *)
+  Orderless (* commutative *)
+}];
+
+
+(* MultipletProduct                            *)
+(* =========================================== *)
+
+(* print visual representation in TraditionalForm *)
+Format[m:MultipletProduct[terms__], TraditionalForm] :=
+    Interpretation[
+      Row@Flatten@Riffle[If[Head[#] === MultipletSum, {Style["(", Large], #, Style[")", Large]}, #]& /@ List@@m, " \[CircleTimes] "],
+      m
+    ]
+
+MultipletProduct[x_Multiplet] := x
+
+(* Note: the Flat attribute must be set after setting DownValues *)
+(* https://mathematica.stackexchange.com/q/5067/35390 *)
+SetAttributes[MultipletProduct, {
+  Flat, (* associative *)
+  OneIdentity (* the product of one element is the element *)
+}];
+
+
 End[] (* `Private` *)
 
 EndPackage[]
