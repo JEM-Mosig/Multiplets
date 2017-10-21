@@ -283,6 +283,11 @@ TableauToMultiplet[Tableau[spec_, ___], groupDegree_:3] := Multiplet[
 (* TableauFromMultiplet                        *)
 (* =========================================== *)
 
+SyntaxInformation[TableauFromMultiplet] = {
+  (* TableauToMultiplet must be called with at least one argument *)
+  "ArgumentsPattern" -> {__}
+};
+
 TableauFromMultiplet[Multiplet[mplet_List, ___]] := Tableau[
   Evaluate@Select[Reverse@Accumulate@Reverse@mplet, Positive]
 ]
@@ -291,6 +296,10 @@ TableauFromMultiplet[Multiplet[mplet_List, ___], fil_] := Tableau[
   Evaluate@Select[Reverse@Accumulate@Reverse@mplet, Positive],
   fil
 ]
+
+TableauFromMultiplet[l_List] := TableauFromMultiplet /@ l
+
+TableauFromMultiplet[l_List, fil_] := TableauFromMultiplet[#, fil]& /@ l
 
 
 (* MultipletDimension                          *)
