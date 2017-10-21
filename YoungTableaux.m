@@ -117,6 +117,8 @@ Interpretation[
 Tableau[spec_, func_Symbol] := Tableau[spec, func[Tableau[spec]]]
 Tableau[spec_, func_Function] := Tableau[spec, func[Tableau[spec]]]
 
+(*Tableau[] := (Print["!"]; Tableau[{}])*)
+
 (* messages *)
 Tableau::nepty = "The Tableau must be empty."; (* used by filling functions *)
 
@@ -520,28 +522,36 @@ Module[
   {
     tabA = tab1, tabB = tab2, entry, rest, result
   },
-  (* take upper right entry of tabB *)
-  entry = TableauFirst[tabB];
-  (* add entry to each term in all possible ways *)
-  result = TableauSum@@(DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
-    Table[
-      TableauAppend[tabA, row, entry],
-      {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
-    ],
-    deg
-  ]);
-  (* what is left after we took the upper right entry *)
-  rest = TableauRest[tabB];
+  If[Length[spec2] > 0,
+    (* take upper right entry of tabB *)
+    entry = TableauFirst[tabB];
+    (* add entry to each term in all possible ways *)
+    result = TableauSum@@(DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
+      Table[
+        TableauAppend[tabA, row, entry],
+        {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
+      ],
+      deg
+    ]);
+    (* what is left after we took the upper right entry *)
+    rest = TableauRest[tabB]
+    ,
+    (* the second Tableau is empty *)
+    result = tabA;
+    rest = None
+  ];
   (* apply the StepMonitor *)
   monitor[lvl, TableauProduct[result, rest]];
   (* continue *)
-  If[rest~MatchQ~Tableau[{}, ___],
+  If[MatchQ[rest, Tableau[{}, ___]|None],
     (* nothing is left *)
     result,
     (* something is left -> process product with sum *)
-    DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
-      tabReduce[result, rest, deg, monitor, lvl + 1],
-      deg
+    With[{r = TableauSimplify[
+        tabReduce[result, rest, deg, monitor, lvl + 1],
+        deg
+      ]},
+      If[Head[r] === TableauSum, DeleteDuplicates@Select[ValidTableauQ]@r, r]
     ]
   ]
 ]
