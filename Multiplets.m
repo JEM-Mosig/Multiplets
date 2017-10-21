@@ -362,6 +362,9 @@ Format[m:MultipletProduct[terms__], TraditionalForm] :=
 
 MultipletProduct[x_Multiplet] := x
 
+MultipletProduct[a__, Multiplet[{0..}], b___] := MultipletProduct[a, b]
+MultipletProduct[a___, Multiplet[{0..}], b__] := MultipletProduct[a, b]
+
 (* Note: the Flat attribute must be set after setting DownValues *)
 (* https://mathematica.stackexchange.com/q/5067/35390 *)
 SetAttributes[MultipletProduct, {
