@@ -508,6 +508,9 @@ SyntaxInformation[TableauReduce] = {
 TableauReduce[TableauProduct[t1_Tableau, t2_Tableau], deg_Integer, OptionsPattern[]] :=
     tabReduce[TableauClear[t1], TableauClear[t2], deg, OptionValue[StepMonitor]]
 
+TableauReduce[TableauProduct[t1_Tableau, t2_Tableau, rest__], deg_Integer, OptionsPattern[]] :=
+    tabReduce[TableauClear[t1], TableauClear[t2], Sequence@@TableauClear[{rest}], deg, OptionValue[StepMonitor]]
+
 ClearAll[tabReduce];
 
 tabReduce[tab1_Tableau, tab2:Tableau[spec_], deg_Integer, monitor_] := tabReduce[tab1, Tableau[spec, TableauLetters], deg, monitor]
