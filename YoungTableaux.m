@@ -506,16 +506,16 @@ SyntaxInformation[TableauReduce] = {
 };
 
 TableauReduce[TableauProduct[t1_Tableau, t2_Tableau], deg_Integer, OptionsPattern[]] :=
-    tabReduce[TableauClear[t1], TableauClear[t2], deg, OptionValue[StepMonitor]]
+    tabReduce[TableauClear[t1], TableauClear[t2], deg, OptionValue[StepMonitor], 0]
 
 TableauReduce[TableauProduct[t1_Tableau, t2_Tableau, rest__], deg_Integer, OptionsPattern[]] :=
-    tabReduce[TableauClear[t1], TableauClear[t2], Sequence@@TableauClear[{rest}], deg, OptionValue[StepMonitor]]
+    tabReduce[TableauClear[t1], TableauClear[t2], Sequence@@TableauClear[{rest}], deg, OptionValue[StepMonitor], 0]
 
 ClearAll[tabReduce];
 
-tabReduce[tab1_Tableau, tab2:Tableau[spec_], deg_Integer, monitor_] := tabReduce[tab1, Tableau[spec, TableauLetters], deg, monitor]
+tabReduce[tab1_Tableau, tab2:Tableau[spec_], deg_Integer, monitor_, lvl_] := tabReduce[tab1, Tableau[spec, TableauLetters], deg, monitor, lvl]
 
-tabReduce[tab1_Tableau, tab2:Tableau[spec2_, fil2_], deg_Integer, monitor_] :=
+tabReduce[tab1_Tableau, tab2:Tableau[spec2_, fil2_], deg_Integer, monitor_, lvl_] :=
 Module[
   {
     tabA = tab1, tabB = tab2, entry, rest, result
@@ -533,30 +533,30 @@ Module[
   (* what is left after we took the upper right entry *)
   rest = TableauRest[tabB];
   (* apply the StepMonitor *)
-  monitor[TableauProduct[result, rest]];
+  monitor[lvl, TableauProduct[result, rest]];
   (* continue *)
   If[rest~MatchQ~Tableau[{}, ___],
     (* nothing is left *)
     result,
     (* something is left -> process product with sum *)
     DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
-      tabReduce[result, rest, deg, monitor],
+      tabReduce[result, rest, deg, monitor, lvl + 1],
       deg
     ]
   ]
 ]
 
-tabReduce[a___, sum_TableauSum, b___, deg_Integer, monitor_] := (
+tabReduce[a___, sum_TableauSum, b___, deg_Integer, monitor_, lvl_] := (
   TableauSum@@Table[
-    tabReduce[sum[[i]], a, b, deg, monitor],
+    tabReduce[sum[[i]], a, b, deg, monitor, lvl + 1],
     {i, Length[sum]}
   ]
 )
 
-tabReduce[tab1_Tableau, tab2_Tableau, tabMore__Tableau, deg_Integer, monitor_] := tabReduce[
-  tabReduce[tab1, tab2, deg, monitor],
+tabReduce[tab1_Tableau, tab2_Tableau, tabMore__Tableau, deg_Integer, monitor_, lvl_] := tabReduce[
+  tabReduce[tab1, tab2, deg, monitor, lvl + 1],
   tabMore,
-  deg, monitor
+  deg, monitor, lvl
 ]
 
 
