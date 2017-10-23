@@ -324,9 +324,33 @@ MultipletDimension[m:Multiplet[{a_Integer, b_Integer}, ___]] := Quotient[(a+1)(b
 (* MultipletReduce                             *)
 (* =========================================== *)
 
-MultipletReduce[MultipletProduct[terms__]] := With[{n = 1 + Length[{terms}[[1,1]]]},
-  TableauToMultiplet /@ MultipletSum@@TableauReduce[TableauProduct@@(TableauFromMultiplet@{terms}), n]
+Options[MultipletReduce] = {
+  (* verify that the product and sum of dimensions are equal *)
+  (*
+    ToDo: set default to False
+  *)
+  VerifySolutions -> True
+};
+
+SyntaxInformation[MultipletReduce] = {
+(* MultipletDimension must be called with a single argument *)
+  "ArgumentsPattern" -> {_, OptionsPattern[]}
+};
+
+MultipletReduce[MultipletProduct[terms__], OptionsPattern[]] := Module[{res},
+  res = With[{n = 1 + Length[{terms}[[1,1]]]},
+    TableauToMultiplet /@ MultipletSum@@TableauReduce[TableauProduct@@(TableauFromMultiplet@{terms}), n]
+  ];
+  If[TrueQ@OptionValue[VerifySolutions],
+    If[
+      Not@TrueQ[Times@@MultipletDimension[{terms}] == Total[MultipletDimension[List@@res]]],
+      Message[MultipletReduce::bdd]
+    ]
+  ];
+  res
 ]
+
+MultipletReduce::bdd = "CRITICAL ERROR: Dimensions of input and result are incompatible. Something went wrong.";
 
 
 (* MultipletSum                                *)
