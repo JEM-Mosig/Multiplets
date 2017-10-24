@@ -339,7 +339,7 @@ SyntaxInformation[MultipletReduce] = {
 
 MultipletReduce[MultipletProduct[terms__], OptionsPattern[]] := Module[{res},
   res = With[{n = 1 + Length[{terms}[[1,1]]]},
-    TableauToMultiplet /@ MultipletSum@@TableauReduce[TableauProduct@@(TableauFromMultiplet@{terms}), n]
+    TableauToMultiplet[#, n] & /@ MultipletSum@@TableauReduce[TableauProduct@@(TableauFromMultiplet@{terms}), n]
   ];
   If[TrueQ@OptionValue[VerifySolutions],
     If[
