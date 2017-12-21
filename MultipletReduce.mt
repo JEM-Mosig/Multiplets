@@ -55,4 +55,19 @@ VerificationTest[
   ]
 ]
 
+
+(* some examples which caused trouble before *)
+
+VerificationTest[
+  MultipletReduce[MultipletProduct[Multiplet[{1}], Multiplet[{1}]]]
+  ,
+  MultipletSum[Multiplet[{0}], Multiplet[{2}]]
+]
+
+VerificationTest[
+  Total@MultipletDimension[List@@MultipletReduce[MultipletProduct[Multiplet[{1}], Multiplet[{3}]]], 2]
+  ,
+  8
+]
+
 EndTestSection[]
