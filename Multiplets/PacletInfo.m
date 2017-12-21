@@ -3,6 +3,7 @@ Paclet[
   Version -> "0.1",
   MathematicaVersion -> "11.0+",
   Description -> "Defines multiplets and Young tableaux.",
+  Thumbnail -> "multiplets.png",
   Creator -> "Johannes E. M. Mosig",
   Extensions -> {
     {"Kernel", Root -> ".", Context -> "Multiplets`"},
