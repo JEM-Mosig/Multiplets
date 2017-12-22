@@ -279,6 +279,12 @@ TableauToMultiplet[Tableau[spec_, ___], groupDegree_:3] := Multiplet[
   PadRight[-Differences[Append[spec, 0]], groupDegree - 1, 0]
 ]
 
+TableauToMultiplet[TableauSum[tabs___], groupDegree_:3] :=
+    (TableauToMultiplet[#, groupDegree]&) /@ MultipletSum[tabs]
+
+TableauToMultiplet[TableauProduct[tabs___], groupDegree_:3] :=
+    (TableauToMultiplet[#, groupDegree]&) /@ MultipletProduct[tabs]
+
 
 (* TableauFromMultiplet                        *)
 (* =========================================== *)
@@ -300,6 +306,10 @@ TableauFromMultiplet[Multiplet[mplet_List, ___], fil_] := Tableau[
 TableauFromMultiplet[l_List] := TableauFromMultiplet /@ l
 
 TableauFromMultiplet[l_List, fil_] := TableauFromMultiplet[#, fil]& /@ l
+
+TableauFromMultiplet[MultipletSum[mplets___]] := TableauSum@@TableauFromMultiplet[{mplets}]
+
+TableauFromMultiplet[MultipletProduct[mplets___]] := TableauProduct@@TableauFromMultiplet[{mplets}]
 
 
 (* MultipletDimension                          *)
