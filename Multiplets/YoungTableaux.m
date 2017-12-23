@@ -127,8 +127,6 @@ Interpretation[
 Tableau[spec_, func_Symbol] := Tableau[spec, func[Tableau[spec]]]
 Tableau[spec_, func_Function] := Tableau[spec, func[Tableau[spec]]]
 
-(*Tableau[] := (Print["!"]; Tableau[{}])*)
-
 (* messages *)
 Tableau::nepty = "The Tableau must be empty."; (* used by filling functions *)
 
@@ -234,9 +232,12 @@ ValidTableauQ[t:Tableau[spec_, fil_?ListQ], groupDegree_, labelset_:Alphabet] :=
     If[!AllTrue[Transpose[m] /. (Empty|None) -> Nothing, DuplicateFreeQ], (*Print["same label in col"];*)Throw[False]];
 
     (** entries must give lattice permutation **)
-    (* ToDo: check this *)
+    (*
+      Specifically, when reading from right to left, top to bottom, then at any given
+      position in the resulting string there must be more 'a's than 'b's, more 'b's than
+      'c's, etc.
+    *)
     p = Join[Select[Flatten[Join[Reverse/@m]], (# =!= None && # =!= Empty)&]];
-    (*p = Flatten[Reverse@*First /@ Rest@FoldList[TakeDrop[#1[[2]], #2] &, t, spec]];*)
 
     Which[
       labelset === Alphabet,
@@ -590,14 +591,6 @@ SyntaxInformation[TableauReduce] = {
   "ArgumentsPattern" -> {_, _, OptionsPattern[]}
 };
 
-(*TableauReduce[TableauProduct[t1:Tableau[spec1_], Tableau[spec2_]], deg_Integer, options:OptionsPattern[]] := tabReduce1[
-  TableauProduct[TableauClear[t1], Tableau[spec2, TableauLetters]],
-  deg,
-  options
-]*)
-
-(*ClearAll[tabReduce1];*)
-
 TableauReduce[TableauProduct[t1_Tableau, t2_Tableau], deg_Integer, OptionsPattern[]] := tabReduce[
   TableauClear[t1],
   Tableau[Evaluate[t2[[1]]], TableauLetters],
@@ -612,11 +605,6 @@ TableauReduce[TableauProduct[t1_Tableau, t2_Tableau, rest__], deg_Integer, optio
     {s, List@@sum}
   ]
 ]
-
-(*Fold[
-  tabReduce[#1, #2, deg, OptionValue[StepMonitor]]&,
-  TableauClear[List@@p]
-]*)
 
 ClearAll[tabReduce];
 
@@ -670,86 +658,6 @@ tabReduce[tab1_Tableau, tab2_Tableau, deg_, monitor_] := Catch[
     ]
   ]
 ]
-
-(*
-TableauReduce[TableauProduct[t1_Tableau, t2_Tableau], deg_Integer, OptionsPattern[]] :=
-    tabReduce[TableauClear[t1], TableauClear[t2], deg, OptionValue[StepMonitor], 0]
-
-TableauReduce[TableauProduct[t1_Tableau, t2_Tableau, rest__], deg_Integer, OptionsPattern[]] :=
-    tabReduce[TableauClear[t1], TableauClear[t2], Sequence@@TableauClear[{rest}], deg, OptionValue[StepMonitor], 0]
-
-ClearAll[tabReduce];
-
-tabReduce[tab1_Tableau, tab2:Tableau[spec_], deg_Integer, monitor_, lvl_] := tabReduce[tab1, Tableau[spec, TableauLetters], deg, monitor, lvl]
-
-tabReduce[tab1_Tableau, tab2:Tableau[spec2_, fil2_], deg_Integer, monitor_, lvl_] :=
-Module[
-  {
-    tabA = tab1, tabB = tab2, entry, rest, result
-  },
-  If[Length[spec2] > 0,
-    (* take upper right entry of tabB *)
-    entry = TableauFirst[tabB];
-    (* add entry to each term in all possible ways *)
-    (*result = TableauSum@@(DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
-      Select[
-        Table[
-          TableauAppend[tabA, row, entry],
-          {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
-        ],
-        TableauQ
-      ],
-      deg
-    ]);*)
-    result = Table[
-      TableauAppend[tabA, row, entry],
-      {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
-    ];
-    (*Print["all combinations: ", result];*)
-    result = Select[result, ValidTableauQ[#, deg]&];
-    (*Print["select valid: ", result];*)
-    result = TableauSimplify[result, deg];
-    (*Print["simplified: ", result];*)
-    result = DeleteDuplicates@result;
-    (*Print["delete duplicates: ", result];*)
-    result = TableauSum@@result;
-
-    (* what is left after we took the upper right entry *)
-    rest = TableauRest[tabB]
-    ,
-    (* the second Tableau is empty *)
-    result = tabA;
-    rest = None
-  ];
-  (* apply the StepMonitor *)
-  monitor[lvl, TableauProduct[result, rest]];
-  (* continue *)
-  If[MatchQ[rest, Tableau[{}, ___]|None],
-    (* nothing is left *)
-    result,
-    (* something is left -> process product with sum *)
-    With[{r = TableauSimplify[
-        tabReduce[result, rest, deg, monitor, lvl + 1],
-        deg
-      ]},
-      If[Head[r] === TableauSum, DeleteDuplicates@Select[ValidTableauQ]@r, r]
-    ]
-  ]
-]
-
-tabReduce[a___, sum_TableauSum, b___, deg_Integer, monitor_, lvl_] := (
-  TableauSum@@Table[
-    tabReduce[sum[[i]], a, b, deg, monitor, lvl + 1],
-    {i, Length[sum]}
-  ]
-)
-
-tabReduce[tab1_Tableau, tab2_Tableau, tabMore__Tableau, deg_Integer, monitor_, lvl_] := tabReduce[
-  tabReduce[tab1, tab2, deg, monitor, lvl + 1],
-  tabMore,
-  deg, monitor, lvl
-]
-*)
 
 (* TableauSum                                  *)
 (* =========================================== *)
