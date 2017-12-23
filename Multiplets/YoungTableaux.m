@@ -508,7 +508,10 @@ If[row <= Length[spec],
       Append[PadRight[fil, Total[spec], Empty], entry]
     ] /. replaceEmptyFillings
   ]
-]
+] /; !ListQ[entry]
+
+(* automatically append lists of elements in one row *)
+TableauAppend[tab_Tableau, row_, entry_List] := Fold[TableauAppend[#1, row, #2] &, tab, entry]
 
 (* use this rule to simplify Tableau expressions by removing empty fillings (in the end) *)
 replaceEmptyFillings = {
