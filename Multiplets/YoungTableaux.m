@@ -56,8 +56,16 @@ If[!ValueQ[TableauFirst::usage],
     TableauFirst::usage = "TableauFirst[tab] gives the label of the upper right box of the given Young Tableau tab.";
 ];
 
+If[!ValueQ[TableauFirstRow::usage],
+    TableauFirstRow::usage = "TableauFirstRow[tab] gives the list of labels of the upper row of the given Young Tableau tab.";
+];
+
 If[!ValueQ[TableauRest::usage],
     TableauRest::usage = "TableauRest[tab] returns the Tableau tab with the upper right box removed. The result is not necessarily a proper Young Tableau.";
+];
+
+If[!ValueQ[TableauRestRows::usage],
+    TableauRestRows::usage = "TableauRestRows[tab] returns the Tableau tab with the upper row removed.";
 ];
 
 If[!ValueQ[TableauAppend::usage],
@@ -395,6 +403,32 @@ If[
 TableauFirst[Tableau[spec_List]] := TableauFirst[Tableau[spec, {}]]
 
 
+(* TableauFirstRow                             *)
+(* =========================================== *)
+
+SetAttributes[TableauFirstRow, {Listable}];
+
+SyntaxInformation[TableauFirstRow] = {
+(* TableauFirstRow must have exactly one argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+TableauFirstRow[Tableau[spec_List, fil_List]] :=
+    If[
+      Length[spec] > 0,
+      If[Length[fil] >= First[spec],
+      (* return upper right box label *)
+        Take[fil, First[spec]],
+      (* no label specified for upper row *)
+        Message[General::partw, First[spec], fil]; $Failed
+      ],
+    (* not enough boxes *)
+      Message[General::partw, 1, spec]; $Failed
+    ]
+
+TableauFirstRow[Tableau[spec_List]] := TableauFirstRow[Tableau[spec, {}]]
+
+
 (* TableauRest                                 *)
 (* =========================================== *)
 
@@ -426,6 +460,26 @@ TableauRest[Tableau[spec_List]] := TableauRest[Tableau[spec, {}]]
 TableauRest[Tableau[{}]] = None;
 TableauRest[Tableau[{},{}]] = None;
 TableauRest[None] = None;
+
+
+(* TableauRestRows                              *)
+(* =========================================== *)
+
+SyntaxInformation[TableauRestRows] = {
+  (* TableauRest must have exactly one argument *)
+  "ArgumentsPattern" -> {_}
+};
+
+TableauRestRows[Tableau[spec_List, fil_List]] := Tableau[
+  Evaluate@Drop[spec, 1],
+  If[Length[fil] > spec[[1]], Drop[fil, spec[[1]]], {}]
+]
+
+TableauRestRows[Tableau[spec_List]] := TableauRestRows[Tableau[spec, {}]]
+
+TableauRestRows[Tableau[{}]] = None;
+TableauRestRows[Tableau[{},{}]] = None;
+TableauRestRows[None] = None;
 
 
 (* TableauAppend                               *)
