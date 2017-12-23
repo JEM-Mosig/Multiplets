@@ -9,22 +9,6 @@ BeginTestSection["MultipletReduce.mt"]
 
 VerificationTest[
   MultipletReduce[
-    MultipletProduct[Multiplet[{1,0}], Multiplet[{0,1}]]
-  ]
-  ,
-  MultipletSum[Multiplet[{1,1}], Multiplet[{0,0}]]
-]
-
-VerificationTest[
-  MultipletReduce[
-    MultipletProduct[Multiplet[{1,0}], Multiplet[{1,0}], Multiplet[{1,0}]]
-  ]
-  ,
-  MultipletSum[Multiplet[{3,0}], Multiplet[{1,1}], Multiplet[{1,1}], Multiplet[{0,0}]]
-]
-
-VerificationTest[
-  MultipletReduce[
     MultipletProduct[Multiplet[{1,0}], Multiplet[{1,0}]]
   ]
   ,
@@ -33,10 +17,155 @@ VerificationTest[
 
 VerificationTest[
   MultipletReduce[
+    MultipletProduct[Multiplet[{1,0}], Multiplet[{0,1}]]
+  ]
+  ,
+  MultipletSum[Multiplet[{1,1}], Multiplet[{0,0}]]
+]
+
+VerificationTest[
+  MultipletReduce[
     MultipletProduct[Multiplet[{1,1}], Multiplet[{1,0}]]
   ]
   ,
   MultipletSum[Multiplet[{2,1}], Multiplet[{0,2}], Multiplet[{1,0}]]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{1,1}], Multiplet[{1,1}]]
+  ]
+  ,
+  MultipletSum[
+    Multiplet[{2,2}],
+    Multiplet[{3,0}],
+    Multiplet[{0,3}],
+    Multiplet[{1,1}], Multiplet[{1,1}],
+    Multiplet[{0,0}]
+  ]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,0}], Multiplet[{1,0}]]
+  ]
+  ,
+  MultipletSum[Multiplet[{3,0}], Multiplet[{1,1}]]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,0}], Multiplet[{0,1}]]
+  ]
+  ,
+  MultipletSum[Multiplet[{2,1}], Multiplet[{1,0}]]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,0}], Multiplet[{1,1}]]
+  ]
+  ,
+  MultipletSum[
+    Multiplet[{3,1}],
+    Multiplet[{1,2}],
+    Multiplet[{2,0}],
+    Multiplet[{1,0}]
+  ]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,0}], Multiplet[{2,0}]]
+  ]
+  ,
+  MultipletSum[Multiplet[{4,0}], Multiplet[{2,1}], Multiplet[{0,2}]]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,0}], Multiplet[{0,2}]]
+  ]
+  ,
+  MultipletSum[Multiplet[{2,2}], Multiplet[{1,1}], Multiplet[{0,0}]]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,1}], Multiplet[{1,0}]]
+  ]
+  ,
+  MultipletSum[Multiplet[{3,1}], Multiplet[{1,2}], Multiplet[{2,0}]]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,1}], Multiplet[{0,1}]]
+  ]
+  ,
+  MultipletSum[Multiplet[{2,2}], Multiplet[{3,0}], Multiplet[{1,1}]]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,1}], Multiplet[{1,1}]]
+  ]
+  ,
+  MultipletSum[
+    Multiplet[{3,2}],
+    Multiplet[{1,3}],
+    Multiplet[{4,0}],
+    Multiplet[{2,1}], Multiplet[{2,1}],
+    Multiplet[{0,2}],
+    Multiplet[{1,0}]
+  ]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,1}], Multiplet[{2,0}]]
+  ]
+  ,
+  MultipletSum[
+    Multiplet[{4,1}],
+    Multiplet[{2,2}],
+    Multiplet[{3,0}],
+    Multiplet[{0,3}],
+    Multiplet[{1,1}]
+  ]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,1}], Multiplet[{0,2}]]
+  ]
+  ,
+  MultipletSum[
+    Multiplet[{2,3}],
+    Multiplet[{3,1}],
+    Multiplet[{1,2}],
+    Multiplet[{2,0}],
+    Multiplet[{0,1}]
+  ]
+]
+
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{2,1}], Multiplet[{2,1}]]
+  ]
+  ,
+  MultipletSum[
+    Multiplet[{4,2}],
+    Multiplet[{5,0}],
+    Multiplet[{2,3}],
+    Multiplet[{3,1}],
+    Multiplet[{3,1}],
+    Multiplet[{0,4}],
+    Multiplet[{1,2}],
+    Multiplet[{1,2}],
+    Multiplet[{2,0}],
+    Multiplet[{0,1}]
+  ]
 ]
 
 VerificationTest[
@@ -55,6 +184,18 @@ VerificationTest[
   ]
 ]
 
+VerificationTest[
+  MultipletReduce[
+    MultipletProduct[Multiplet[{1,0}], Multiplet[{1,0}], Multiplet[{1,0}]]
+  ]
+  ,
+  MultipletSum[
+    Multiplet[{3,0}],
+    Multiplet[{1,1}],
+    Multiplet[{1,1}],
+    Multiplet[{0,0}]
+  ]
+]
 
 (* some examples which caused trouble before *)
 
