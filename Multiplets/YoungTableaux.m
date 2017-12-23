@@ -14,6 +14,8 @@
 
 BeginPackage["YoungTableaux`"]
 
+ClearAll["YoungTableaux`*"]
+
 If[!ValueQ[Tableau::usage],
   Tableau::usage = "Tableau[spec, fil] is a wrapper for a general Young Tableau. spec is a list of row-lengths and fil specifies what is written within the boxes. Alternatively fil can be a filling function or nothing.";
 ];
@@ -212,16 +214,16 @@ ValidTableauQ[Tableau[spec_]] := TableauQ[Tableau[spec]]
 
 ValidTableauQ[t:Tableau[spec_, fil_?ListQ], groupDegree_] := Module[{m,col,p,count,bins,i},
   Catch[
-    If[!TableauQ[t], Print["no tableau"];Throw[False]];
+    If[!TableauQ[t], (*Print["no tableau"];*)Throw[False]];
 
     (** Tableau is invalid if a column is longer than groupDegree **)
-    If[Length[spec] > groupDegree, Print["too long"];Throw[False]];
+    If[Length[spec] > groupDegree, (*Print["too long"];*)Throw[False]];
 
     (** convert the given tableau to matrix form **)
     m = TableauToMatrix[t];
 
     (** boxes with the same label must not appear in the same column **)
-    If[!AllTrue[Transpose[m] /. (Empty|None) -> Nothing, DuplicateFreeQ], Print["same label in col"];Throw[False]];
+    If[!AllTrue[Transpose[m] /. (Empty|None) -> Nothing, DuplicateFreeQ], (*Print["same label in col"];*)Throw[False]];
 
     (** entries must give lattice permutation **)
     (* ToDo: check this *)
@@ -232,7 +234,7 @@ ValidTableauQ[t:Tableau[spec_, fil_?ListQ], groupDegree_] := Module[{m,col,p,cou
     count = ConstantArray[0, Length[bins]];
     For[i = 1, i <= Length[p], i++,
       count[[First[Flatten[Position[bins,p[[i]]]]]]]++;
-      If[Not@OrderedQ[Reverse[count]], Print["no lattice"];Throw[False]]
+      If[Not@OrderedQ[Reverse[count]], (*Print["no lattice"];*)Throw[False]]
     ];
 
     True
@@ -528,21 +530,18 @@ SyntaxInformation[TableauReduce] = {
 
 (*ClearAll[tabReduce1];*)
 
-TableauReduce[expr_, deg_Integer, OptionsPattern[]] := With[{monitor = OptionValue[StepMonitor]},
-  FixedPoint[
-    (monitor["expand", TableauExpand[#]]; tabReduce[TableauExpand[#], deg, monitor])&,
-    (*expr*)
-    (* begin with expr where all Tableaux are filled with different letters *)
-    (*Module[{offset = 0},
-      expr /. t_Tableau :> With[{tab = Tableau[Evaluate[t[[1]]], TableauLetters[#, offset]&]},
-          offset += Length[t[[1]]];
-          tab
-        ]
-    ]*)
-    TableauExpand[expr] /. {
-      TableauProduct[t1_Tableau, t2_Tableau] :> TableauProduct[TableauClear[t1], Tableau[Evaluate[t2[[1]]], TableauLetters]]
-    },
-    50 (* ToDo: DELETE - safety for testing only *)
+TableauReduce[TableauProduct[t1_Tableau, t2_Tableau], deg_Integer, OptionsPattern[]] := tabReduce[
+  TableauClear[t1],
+  Tableau[Evaluate[t2[[1]]], TableauLetters],
+  deg,
+  OptionValue[StepMonitor]
+]
+
+TableauReduce[TableauProduct[t1_Tableau, t2_Tableau, rest__], deg_Integer, options:OptionsPattern[]] := Module[{sum, s},
+  sum = TableauReduce[TableauProduct[t1, t2], deg, options];
+  TableauSum@@Table[
+    TableauReduce[TableauProduct[s, rest], deg, options],
+    {s, List@@sum}
   ]
 ]
 
@@ -553,22 +552,8 @@ TableauReduce[expr_, deg_Integer, OptionsPattern[]] := With[{monitor = OptionVal
 
 ClearAll[tabReduce];
 
-tabReduce[TableauSum[a___, p_TableauProduct, b___], deg_, monitor_] := TableauSum[
-  a, tabReduce[p, deg, monitor], b
-]
-
-tabReduce[s_TableauSum, ___] := TableauSum[s] /; FreeQ[s, TableauProduct]
-
-tabReduce[TableauProduct[a_, b_, rest__], deg_, monitor_] := TableauProduct[
-  tabReduce[
-    TableauProduct[a, b],
-    deg,
-    (monitor[#1, TableauProduct[Highlighted[#2], rest]])&
-  ], rest
-]
-
-tabReduce[TableauProduct[tab1_Tableau, tab2_Tableau], deg_, monitor_] := Catch[
-  Module[{(*tab1, tab2, *)entry, rest, res},
+tabReduce[tab1_Tableau, tab2_Tableau, deg_, monitor_] := Catch[
+  Module[{(*tab1, tab2, *)entry, rest, res, t},
     (*tab1 = TableauClear[t1];*)
     (*If[t2 === TableauClear[t2],
       tab2 = Tableau[Evaluate[t2[[1]]], TableauLetters],
@@ -595,19 +580,26 @@ tabReduce[TableauProduct[tab1_Tableau, tab2_Tableau], deg_, monitor_] := Catch[
     ];
     (* filter out arrangements that are no Young Tableaux *)
     res = Select[res, TableauQ];
-    monitor["generate combinations", TableauProduct[TableauSum@@res, rest]];
+    (*monitor["generate combinations", TableauProduct[TableauSum@@res, rest]];*)
     (* filter out invalid tableaux *)
     res = Select[res, ValidTableauQ[#, deg]&];
-    monitor["delete invalid", TableauProduct[TableauSum@@res, rest]];
+    (*monitor["delete invalid", TableauProduct[TableauSum@@res, rest]];*)
     (* delete columns of length deg *)
     res = TableauSimplify[res, deg];
-    monitor["remove columns", TableauProduct[TableauSum@@res, rest]];
+    (*monitor["remove columns", TableauProduct[TableauSum@@res, rest]];*)
     (* delete duplicate tableaux *)
     res = DeleteDuplicates@res;
-    monitor["delete duplicates", TableauProduct[TableauSum@@res, rest]];
+    (*monitor["delete duplicates", TableauProduct[TableauSum@@res, rest]];*)
 
-    (* return product with res *)
-    TableauProduct[TableauSum@@res, rest]
+    monitor[" simplified ", TableauProduct[TableauSum@@res, rest]];
+
+    (* for each term, reduce the product with the rest *)
+    DeleteDuplicates[
+      TableauSum@@Table[
+        tabReduce[t, rest, deg, monitor[Row[{t, ">", #1}], #2]&],
+        {t, res}
+      ]
+    ]
   ]
 ]
 
