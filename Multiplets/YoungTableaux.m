@@ -212,7 +212,7 @@ SyntaxInformation[ValidTableauQ] = {
 
 ValidTableauQ[Tableau[spec_]] := TableauQ[Tableau[spec]]
 
-ValidTableauQ[t:Tableau[spec_, fil_?ListQ], groupDegree_] := Module[{m,col,p,count,bins,i},
+ValidTableauQ[t:Tableau[spec_, fil_?ListQ], groupDegree_, labelset_:Alphabet] := Module[{m,col,p,count,bins,i},
   Catch[
     If[!TableauQ[t], (*Print["no tableau"];*)Throw[False]];
 
@@ -230,7 +230,18 @@ ValidTableauQ[t:Tableau[spec_, fil_?ListQ], groupDegree_] := Module[{m,col,p,cou
     p = Join[Select[Flatten[Join[Reverse/@m]], (# =!= None && # =!= Empty)&]];
     (*p = Flatten[Reverse@*First /@ Rest@FoldList[TakeDrop[#1[[2]], #2] &, t, spec]];*)
 
-    bins = Sort[DeleteDuplicates[fil]];
+    Which[
+      labelset === Alphabet,
+      bins = Take[Alphabet[], First@LetterNumber[MaximalBy[fil /. Empty -> Nothing, LetterNumber]]]
+      (* ToDo: handle "aa", "ab", etc. cases *),
+      labelset === Automatic,
+      bins = Sort[DeleteDuplicates[fil]],
+      ListQ[labelset],
+      bins = labelset,
+      True,
+      (* ToDo: generate warning message *)
+      Throw[$Failed]
+    ];
     count = ConstantArray[0, Length[bins]];
     For[i = 1, i <= Length[p], i++,
       count[[First[Flatten[Position[bins,p[[i]]]]]]]++;
