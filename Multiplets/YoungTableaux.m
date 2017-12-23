@@ -210,25 +210,29 @@ SyntaxInformation[ValidTableauQ] = {
 
 ValidTableauQ[Tableau[spec_]] := TableauQ[Tableau[spec]]
 
-ValidTableauQ[Tableau[spec_, fil_?ListQ]] := Module[{m,col,p,count,bins,i},
+ValidTableauQ[t:Tableau[spec_, fil_?ListQ], groupDegree_] := Module[{m,col,p,count,bins,i},
   Catch[
-    If[!TableauQ[Tableau[spec, fil]], Throw[False]];
+    If[!TableauQ[t], Print["no tableau"];Throw[False]];
+
+    (** Tableau is invalid if a column is longer than groupDegree **)
+    If[Length[spec] > groupDegree, Print["too long"];Throw[False]];
 
     (** convert the given tableau to matrix form **)
-    m = TableauToMatrix[Tableau[spec, fil]];
+    m = TableauToMatrix[t];
 
     (** boxes with the same label must not appear in the same column **)
-    If[!AllTrue[Transpose[m] /. (Empty|None) -> Nothing, DuplicateFreeQ], Throw[False]];
+    If[!AllTrue[Transpose[m] /. (Empty|None) -> Nothing, DuplicateFreeQ], Print["same label in col"];Throw[False]];
 
     (** entries must give lattice permutation **)
     (* ToDo: check this *)
     p = Join[Select[Flatten[Join[Reverse/@m]], (# =!= None && # =!= Empty)&]];
+    (*p = Flatten[Reverse@*First /@ Rest@FoldList[TakeDrop[#1[[2]], #2] &, t, spec]];*)
 
     bins = Sort[DeleteDuplicates[fil]];
     count = ConstantArray[0, Length[bins]];
     For[i = 1, i <= Length[p], i++,
       count[[First[Flatten[Position[bins,p[[i]]]]]]]++;
-      If[Not@OrderedQ[Reverse[count]], Throw[False]]
+      If[Not@OrderedQ[Reverse[count]], Print["no lattice"];Throw[False]]
     ];
 
     True
@@ -468,14 +472,14 @@ TableauSimplify[Tableau[spec_List, filling_List], groupDegree_Integer] := Module
     fil = PadRight[filling, Total[spec], Empty];
 
     (* delete columns with groupDegree boxes *)
-    If[Length[spec] >= groupDegree,
+    If[Length[spec] == groupDegree,
       newSpec = (#-1)& /@ spec;
       While[newSpec != {} && Last[newSpec] <= 0, newSpec = Most[newSpec]];
       newFil = Delete[fil, List /@ Prepend[Table[Fold[Plus, 1, spec[[;;i]]], {i, Length[spec] - 1}], 1]];
       TableauSimplify[Tableau[Evaluate@newSpec, newFil], groupDegree]
       ,
       newSpec = spec;
-      While[newSpec != {} && Last[newSpec] <= 0, newSpec = Most[newSpec]];
+      (*While[newSpec != {} && Last[newSpec] <= 0, newSpec = Most[newSpec]];*)
       Tableau[Evaluate@newSpec, fil]
     ]
   ] /. replaceEmptyFillings
@@ -492,13 +496,22 @@ TableauSimplify[tabs_TableauSum, groupDegree_] := TableauSimplify[#, groupDegree
 (* =========================================== *)
 
 TableauExpand[TableauProduct[a___, sum_TableauSum, b___]] := TableauSum@@Table[
-  TableauProduct[sum[[i]], a, b],
+  TableauProduct[a, sum[[i]], b],
   {i, Length[sum]}
 ]
+
+TableauExpand[TableauSum[a___, prod_TableauProduct, b___]] := TableauSum[a, TableauExpand[prod], b]
+
+(* trivial cases *)
+TableauExpand[expr_TableauSum] := expr /; FreeQ[expr, TableauProduct];
+TableauExpand[expr_TableauProduct] := expr /; FreeQ[expr, TableauSum];
 
 
 (* TableauReduce                               *)
 (* =========================================== *)
+
+(* the algorithm is described, for example in *)
+(* http://physik.uni-graz.at/~gxe/2013-hadron-physics/hadron-app-3.pdf *)
 
 Options[TableauReduce] = {StepMonitor :> Null};
 
@@ -507,6 +520,98 @@ SyntaxInformation[TableauReduce] = {
   "ArgumentsPattern" -> {_, _, OptionsPattern[]}
 };
 
+(*TableauReduce[TableauProduct[t1:Tableau[spec1_], Tableau[spec2_]], deg_Integer, options:OptionsPattern[]] := tabReduce1[
+  TableauProduct[TableauClear[t1], Tableau[spec2, TableauLetters]],
+  deg,
+  options
+]*)
+
+(*ClearAll[tabReduce1];*)
+
+TableauReduce[expr_, deg_Integer, OptionsPattern[]] := With[{monitor = OptionValue[StepMonitor]},
+  FixedPoint[
+    (monitor["expand", TableauExpand[#]]; tabReduce[TableauExpand[#], deg, monitor])&,
+    (*expr*)
+    (* begin with expr where all Tableaux are filled with different letters *)
+    (*Module[{offset = 0},
+      expr /. t_Tableau :> With[{tab = Tableau[Evaluate[t[[1]]], TableauLetters[#, offset]&]},
+          offset += Length[t[[1]]];
+          tab
+        ]
+    ]*)
+    TableauExpand[expr] /. {
+      TableauProduct[t1_Tableau, t2_Tableau] :> TableauProduct[TableauClear[t1], Tableau[Evaluate[t2[[1]]], TableauLetters]]
+    },
+    50 (* ToDo: DELETE - safety for testing only *)
+  ]
+]
+
+(*Fold[
+  tabReduce[#1, #2, deg, OptionValue[StepMonitor]]&,
+  TableauClear[List@@p]
+]*)
+
+ClearAll[tabReduce];
+
+tabReduce[TableauSum[a___, p_TableauProduct, b___], deg_, monitor_] := TableauSum[
+  a, tabReduce[p, deg, monitor], b
+]
+
+tabReduce[s_TableauSum, ___] := TableauSum[s] /; FreeQ[s, TableauProduct]
+
+tabReduce[TableauProduct[a_, b_, rest__], deg_, monitor_] := TableauProduct[
+  tabReduce[
+    TableauProduct[a, b],
+    deg,
+    (monitor[#1, TableauProduct[Highlighted[#2], rest]])&
+  ], rest
+]
+
+tabReduce[TableauProduct[tab1_Tableau, tab2_Tableau], deg_, monitor_] := Catch[
+  Module[{(*tab1, tab2, *)entry, rest, res},
+    (*tab1 = TableauClear[t1];*)
+    (*If[t2 === TableauClear[t2],
+      tab2 = Tableau[Evaluate[t2[[1]]], TableauLetters],
+      tab2 = t2
+    ];*)
+    (*tab2 = Tableau[Evaluate[t2[[1]]], TableauLetters];*)
+
+    (* the product of x with 1 is just x *)
+    Which[
+      MatchQ[tab1, Tableau[{}, ___]], Throw[tab2],
+      MatchQ[tab2, Tableau[{}, ___]], Throw[tab1]
+    ];
+
+    (* take upper right box from tab2 *)
+    entry = TableauFirst[tab2];
+
+    (* the remaining tableau is *)
+    rest = TableauRest[tab2];
+
+    (* add entry to tab1 in all possible ways *)
+    res = Table[
+      TableauAppend[tab1, row, entry],
+      {row, 1 + Length[tab1[[1]]]} (* for each row in tab1 *)
+    ];
+    (* filter out arrangements that are no Young Tableaux *)
+    res = Select[res, TableauQ];
+    monitor["generate combinations", TableauProduct[TableauSum@@res, rest]];
+    (* filter out invalid tableaux *)
+    res = Select[res, ValidTableauQ[#, deg]&];
+    monitor["delete invalid", TableauProduct[TableauSum@@res, rest]];
+    (* delete columns of length deg *)
+    res = TableauSimplify[res, deg];
+    monitor["remove columns", TableauProduct[TableauSum@@res, rest]];
+    (* delete duplicate tableaux *)
+    res = DeleteDuplicates@res;
+    monitor["delete duplicates", TableauProduct[TableauSum@@res, rest]];
+
+    (* return product with res *)
+    TableauProduct[TableauSum@@res, rest]
+  ]
+]
+
+(*
 TableauReduce[TableauProduct[t1_Tableau, t2_Tableau], deg_Integer, OptionsPattern[]] :=
     tabReduce[TableauClear[t1], TableauClear[t2], deg, OptionValue[StepMonitor], 0]
 
@@ -526,13 +631,29 @@ Module[
     (* take upper right entry of tabB *)
     entry = TableauFirst[tabB];
     (* add entry to each term in all possible ways *)
-    result = TableauSum@@(DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
-      Table[
-        TableauAppend[tabA, row, entry],
-        {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
+    (*result = TableauSum@@(DeleteDuplicates@Select[ValidTableauQ]@TableauSimplify[
+      Select[
+        Table[
+          TableauAppend[tabA, row, entry],
+          {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
+        ],
+        TableauQ
       ],
       deg
-    ]);
+    ]);*)
+    result = Table[
+      TableauAppend[tabA, row, entry],
+      {row, 1 + Length[tabA[[1]]]} (* for each row in tabA *)
+    ];
+    (*Print["all combinations: ", result];*)
+    result = Select[result, ValidTableauQ[#, deg]&];
+    (*Print["select valid: ", result];*)
+    result = TableauSimplify[result, deg];
+    (*Print["simplified: ", result];*)
+    result = DeleteDuplicates@result;
+    (*Print["delete duplicates: ", result];*)
+    result = TableauSum@@result;
+
     (* what is left after we took the upper right entry *)
     rest = TableauRest[tabB]
     ,
@@ -568,7 +689,7 @@ tabReduce[tab1_Tableau, tab2_Tableau, tabMore__Tableau, deg_Integer, monitor_, l
   tabMore,
   deg, monitor, lvl
 ]
-
+*)
 
 (* TableauSum                                  *)
 (* =========================================== *)
