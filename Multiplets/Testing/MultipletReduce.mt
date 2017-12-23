@@ -206,7 +206,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Total@MultipletDimension[List@@MultipletReduce[MultipletProduct[Multiplet[{1}], Multiplet[{3}]]], 2]
+  Total@MultipletDimension[List@@MultipletReduce[MultipletProduct[Multiplet[{1}], Multiplet[{3}]]]]
   ,
   8
 ]
