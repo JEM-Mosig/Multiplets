@@ -186,7 +186,7 @@ $MaxMultipletPrintDimensionSU3::intOnly = "$MaxMultipletPrintDimensionSU3 must b
 
 multipletChart[Multiplet[{a_Integer,  b_Integer}, ___]] := If[a == 0 && b == 0,
   (* draw just one dot (necessary to avoid oversize dot) *)
-  Graphics[{Black, Disk[{0, 0}], Transparent, Rectangle[{-10, -1}, {10, 1}]}, ImageSize->Tiny]
+  Graphics[{ColorData[112, 2], Disk[{0, 0}], Transparent, Rectangle[{-10, -1}, {10, 1}]}, ImageSize->Tiny]
   , 
   (* draw diagram *)
   Module[{Tup, Uup, Vup, Tdn, Udn, Vdn}, 
@@ -216,7 +216,7 @@ multipletChart[Multiplet[{a_Integer,  b_Integer}, ___]] := If[a == 0 && b == 0,
           ], 
           (* fill with states inside boundary *)
           ColorData[112, 2] (* blue *),
-          Disk[#,  0.1]& /@ ComposeList[
+          Disk[#,  Scaled[0.05]]& /@ ComposeList[
             (* 'Rest' undoes the first Udn move *)
             Rest@Flatten@Table[{
                 {Udn},  (* next layer (go inside) *)
@@ -240,13 +240,17 @@ multipletChart[Multiplet[{a_Integer,  b_Integer}, ___]] := If[a == 0 && b == 0,
   ]
 ]
 
-multipletChart[Multiplet[{a_Integer}, ___]] := Graphics[{
-    Thick, Black,
-    Line[{{0, 0}, {1, 0}}],
-    ColorData[112, 2],
-    Disk[{#, 0}, 0.05] & /@ Subdivide[0, 1, a]
-  },
-  ImageSize -> {128, 32}
+multipletChart[Multiplet[{a_Integer}, ___]] := If[a == 0,
+  (* draw just one dot (necessary to avoid Subdivide problem) *)
+  Graphics[{ColorData[112, 2], Disk[{0, 0}], Transparent, Rectangle[{-10, -1}, {10, 1}]}, ImageSize->Tiny],
+  Graphics[{
+      Thick, Black,
+      Line[{{0, 0}, {1, 0}}],
+      ColorData[112, 2],
+      Disk[{#, 0}, 0.05] & /@ Subdivide[0, 1, a]
+    },
+    ImageSize -> {128, 32}
+  ]
 ]
 
 (* MultipletQ                                  *)
