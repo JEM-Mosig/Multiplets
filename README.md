@@ -1,7 +1,21 @@
 # Multiplets
 Mathematica package for SU(n) multiplets and Young tableaux.
 
-## Installation instructions (for development)
+## Installation instructions
+There are two primary ways to install the *Multiplets* paclet. 
+If you just want to use the paclet, you should follow the "For use" instructions, but if you want to modify the source code yourself, you should follow the "For development" instructions.
+
+### For use
+Download the latest ***.paclet** release from https://github.com/JEM-Mosig/Multiplets/releases to some local directory, say `c:\downloads\`. 
+Then open Mathematica and type
+```mathematica
+<< PacletManager`
+PacletInstall[FileNameJoin["c:\\downloads\\Multiplets-X.X.paclet"]]
+```
+to install the paclet (`FileNameJoin` ensures that pathname separators are appropriate for your operating system). 
+Note, that you have to replace the path and name of the paclet file with whatever you chose when you downloaded it.
+
+### For development
 The following instructions allow you to setup Mathematica such that you can load the *Multiplets* paclet with `` << Multiplets` `` in any notebook, without installing it permanently.
 
 Download the *Multiplets* directory into a directory of your choice, say `c:\myMMAPaclets\`. Within Mathematica, type 
